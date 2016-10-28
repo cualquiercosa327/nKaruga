@@ -4,6 +4,12 @@
 #include "gfx/kanji.h"
 #include "misc_data.h"
 
+#ifdef HOMEDIR
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
 #include <stack>
 
 #define ENEMY_W(i) Level::enemiesArray->data[i].img[0]
@@ -85,6 +91,25 @@ inline void readFromConfig(FILE* in)
 	G_displayBg = !!fgetc(in);
 }
 
+static FILE* open_configfile(const char* mode)
+{
+	#ifdef HOMEDIR
+	char finalpath[128], finalpath2[128];
+	
+	snprintf(finalpath, sizeof(finalpath), "%s/.nkaruga", getenv("XDG_CONFIG_HOME"));
+	/* Check if home folder exists */
+	if(access( finalpath, F_OK ) == -1) 
+	{
+		mkdir(finalpath, 0755);	
+	}
+	
+	snprintf(finalpath2, sizeof(finalpath2), "%s/%s", finalpath, string_nKaruga_config);
+	return fopen(finalpath2, mode);
+	#else
+	return fopen(string_nKaruga_config, mode);
+	#endif
+}
+
 int main(int argc, char **argv)
 {
 	UNUSED(argc);
@@ -92,13 +117,13 @@ int main(int argc, char **argv)
 
 	int blink = 0;
 	bool donePlaying = false, openedMenu = false;
-	G_usingArrows = false;
+	G_usingArrows = true;
 	FILE* configFile;
 	// Custom keys vars
 	t_key* customKeys[KEYS_TO_BIND] = { &G_fireKey, &G_polarityKey, &G_fragmentKey, &G_pauseKey };
 	int choice = 0;
-	
-	configFile = fopen(string_nKaruga_config, "rb");
+
+	configFile = open_configfile("rb");
 	if(configFile)
 	{
 		readFromConfig(configFile);
@@ -106,14 +131,28 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		G_fireKey = SDL_SCANCODE_I;
-		G_polarityKey = SDL_SCANCODE_O;
-		G_fragmentKey = SDL_SCANCODE_P;
-		G_pauseKey = SDL_SCANCODE_M;
-		G_downKey = SDL_SCANCODE_S;
-		G_leftKey = SDL_SCANCODE_A;
-		G_rightKey = SDL_SCANCODE_D;
-		G_upKey = SDL_SCANCODE_W;
+		if (G_usingArrows)
+		{
+			G_fireKey = SDL_SCANCODE_LCTRL;
+			G_polarityKey = SDL_SCANCODE_LALT;
+			G_fragmentKey = SDL_SCANCODE_LSHIFT;
+			G_pauseKey = SDL_SCANCODE_SPACE;
+			G_downKey = SDL_SCANCODE_DOWN;
+			G_leftKey = SDL_SCANCODE_LEFT;
+			G_rightKey = SDL_SCANCODE_RIGHT;
+			G_upKey = SDL_SCANCODE_UP;
+		}
+		else
+		{
+			G_fireKey = SDL_SCANCODE_I;
+			G_polarityKey = SDL_SCANCODE_O;
+			G_fragmentKey = SDL_SCANCODE_P;
+			G_pauseKey = SDL_SCANCODE_M;
+			G_downKey = SDL_SCANCODE_S;
+			G_leftKey = SDL_SCANCODE_A;
+			G_rightKey = SDL_SCANCODE_D;
+			G_upKey = SDL_SCANCODE_W;
+		}
 	}
 	
 	Level::init(1);
@@ -187,7 +226,7 @@ int main(int argc, char **argv)
 					while (!get_key_pressed(customKeys[i])) updateKeys();
 					wait_no_key_pressed(*(customKeys[i]));
 				}
-				configFile = fopen(string_nKaruga_config, "wb");
+				configFile = open_configfile("wb");
 				if (configFile)
 				{
 					writeToConfig(configFile);
@@ -196,7 +235,7 @@ int main(int argc, char **argv)
 			}
 			else if (!choice)
 			{
-				configFile = fopen(string_nKaruga_config, "w+");
+				configFile = open_configfile("w+");
 				if (configFile)
 				{
 					writeToConfig(configFile);
