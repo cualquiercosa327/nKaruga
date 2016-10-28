@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=0.2.5
+Name=nKaruga
+Comment=Shoot-them up clone
+Exec=sh /usr/bin/start_nkaruga.sh
+Icon=nkaruga-icon
+Terminal=false
+Type=Application
+Categories=GTK;Game;ArcadeGame;
+Keywords=game;games;
+StartupNotify=true

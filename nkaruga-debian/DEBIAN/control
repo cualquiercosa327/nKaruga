@@ -1,0 +1,9 @@
+Package: nkaruga
+Architecture: amd64
+Maintainer: Gameblabla
+Depends: libsdl2-2.0-0, libsdl2-mixer-2.0-0
+Priority: optional
+Version: 0.2.5
+Description: Shoot-them up clone
+ Shoot-them up clone inspired by Ikagura.
+ .
