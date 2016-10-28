@@ -1,7 +1,7 @@
 CC = gcc
 CXX = g++
 LD = g++
-CFLAGS = -Ofast -fdata-sections -ffunction-sections `$(SDL_CONFIG) --cflags` -DHOMEDIR
+CFLAGS = -Ofast -fdata-sections -ffunction-sections `sdl2-config --cflags` -DHOMEDIR
 CXXFLAGS = $(CFLAGS) -std=c++11 -fno-exceptions -fno-rtti 
 LDFLAGS = -lSDL2 -lSDL2_mixer -lstdc++
 LDFLAGS += -lm -Wl,--as-needed,--gc-sections -flto -s
