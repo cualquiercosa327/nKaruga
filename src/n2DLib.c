@@ -8,8 +8,11 @@ extern "C" {
 /*             *
  *  Buffering  *
  *             */
+ 
+#define min(X,Y) (((X) < (Y)) ? (X) : (Y))
+#define max(X,Y) (((X) > (Y)) ? (X) : (Y))
 
-unsigned short *BUFF_BASE_ADDRESS;
+unsigned short BUFF_BASE_ADDRESS[76800];
 SDL_Window *sdlWindow;
 SDL_Renderer *sdlRenderer;
 SDL_Texture *MAIN_SCREEN;
@@ -20,8 +23,10 @@ Uint32 baseFPS;
 
 void initBuffering()
 {
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-	SDL_CreateWindowAndRenderer(320 * 2, 240 * 2, SDL_WINDOW_BORDERLESS, &sdlWindow, &sdlRenderer);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER);
+	sdlWindow = SDL_CreateWindow("nKaruga", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 320, 240, SDL_WINDOW_FULLSCREEN_DESKTOP);  
+	sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_ACCELERATED);
+	SDL_RenderSetLogicalSize(sdlRenderer, 320, 240);
 	if(!sdlWindow || !sdlRenderer)
 	{
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Initialisation error", "Error when initialising SDL2, check stdout.txt for details.", NULL);
@@ -29,10 +34,13 @@ void initBuffering()
 		SDL_Quit();
 		exit(1);
 	}
-	MAIN_SCREEN = SDL_CreateTexture(sdlRenderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STREAMING, 320 * 2, 240 * 2);
-
-	BUFF_BASE_ADDRESS = (unsigned short*)malloc(320 * 240 * sizeof(unsigned short));
-	memset(BUFF_BASE_ADDRESS, 0, sizeof(BUFF_BASE_ADDRESS));
+	MAIN_SCREEN = SDL_CreateTexture(sdlRenderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STREAMING, 320, 240);
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+	
+	/* Clear everything on screen */
+	SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
+	SDL_RenderClear(sdlRenderer);
+	SDL_RenderPresent(sdlRenderer);
 	
 	baseFPS = SDL_GetTicks();
 	SDL_PumpEvents();
@@ -68,18 +76,12 @@ void updateScreen()
 	unsigned int c;
 	void *pixels;
 	int pitch;
+	
 	SDL_LockTexture(MAIN_SCREEN, NULL, &pixels, &pitch);
-	for (i = 0; i < 320; i++)
-	{
-		for (j = 0; j < 240; j++)
-		{
-			c = BUFF_BASE_ADDRESS[j * 320 + i];
-			c |= c << 16;
-			*(unsigned int*)(pixels + j * pitch * 2 + i * 4) = c;
-			*(unsigned int*)(pixels + (j * 2 + 1) * pitch + i * 4) = c;
-		}
-	}
+	memcpy(pixels,BUFF_BASE_ADDRESS,153600);
 	SDL_UnlockTexture(MAIN_SCREEN);
+	SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
+	SDL_RenderClear(sdlRenderer);
 	SDL_RenderCopy(sdlRenderer, MAIN_SCREEN, NULL, NULL);
 	SDL_RenderPresent(sdlRenderer);
 	updateKeys();
@@ -97,7 +99,6 @@ void deinitBuffering()
 	SDL_DestroyRenderer(sdlRenderer);
 	SDL_DestroyWindow(sdlWindow);
 	SDL_Quit();
-	free(BUFF_BASE_ADDRESS);
 }
 
 /*        *
@@ -698,7 +699,7 @@ int get_key_pressed(t_key* report)
 	return 0;
 }
 
- int isKey(t_key k1, t_key k2)
+int isKey(t_key k1, t_key k2)
 {
 	return k1 == k2;
 }

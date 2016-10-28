@@ -90,7 +90,7 @@ extern int isKey(t_key, t_key);
 extern unsigned short * loadBMP(const char*, unsigned short);
 
 #define BUFF_BYTES_SIZE (320*240*2)
-extern unsigned short *BUFF_BASE_ADDRESS;
+extern unsigned short BUFF_BASE_ADDRESS[320 * 240];
 extern SDL_Texture *MAIN_SCREEN;
 
 // Global key state
