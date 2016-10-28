@@ -1,0 +1,34 @@
+CC = i686-w64-mingw32-gcc
+CXX = i686-w64-mingw32-g++
+LD = i686-w64-mingw32-g++
+WINDRES = i686-w64-mingw32-windres
+SDL_CONFIG = /usr/i686-w64-mingw32/bin/sdl2-config
+
+CFLAGS = -Ofast -I ngl -I. -Wall $(shell $(SDL_CONFIG) --cflags)
+CXXFLAGS = $(CFLAGS) -std=c++11 -fno-exceptions -fno-rtti
+LDFLAGS = -static -lmingw32 
+LDFLAGS += $(shell $(SDL_CONFIG) --static-libs) 
+LDFLAGS += -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lversion -luuid
+LDFLAGS += -lSDL2_mixer -lvorbisidec -lm  -static-libgcc -mwindows -s
+EXE = nKaruga
+DIRECTORIES = ./src
+OBJS = $(patsubst %.c, %.o, $(shell find $(DIRECTORIES) -name \*.c))
+OBJS += $(patsubst %.cpp, %.o, $(shell find $(DIRECTORIES) -name \*.cpp))
+OBJS += icon.res
+
+all: ico $(EXE).exe
+
+ico:
+	$(WINDRES) icon.rc -O coff -o icon.res
+
+%.o: %.cpp
+	@echo Compiling $<...
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(EXE).exe: $(OBJS)
+	+$(LD) $^ -o $@ $(CXXFLAGS) $(LDFLAGS)
+
+.PHONY: clean
+clean:
+	rm -f `find . -name \*.o`
+	rm -f $(EXE).elf

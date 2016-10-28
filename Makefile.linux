@@ -1,0 +1,31 @@
+CC = gcc
+CXX = g++
+LD = g++
+CFLAGS = -Ofast -fdata-sections -ffunction-sections `$(SDL_CONFIG) --cflags` -DHOMEDIR
+CXXFLAGS = $(CFLAGS) -std=c++11 -fno-exceptions -fno-rtti 
+LDFLAGS = -lSDL2 -lSDL2_mixer -lstdc++
+LDFLAGS += -lm -Wl,--as-needed,--gc-sections -flto -s
+EXE = nKaruga
+DIRECTORIES = ./src
+OBJS = $(patsubst %.c, %.o, $(shell find $(DIRECTORIES) -name \*.c))
+OBJS += $(patsubst %.cpp, %.o, $(shell find $(DIRECTORIES) -name \*.cpp))
+
+
+#
+all: $(EXE).elf
+
+%.o: %.c
+	@echo Compiling $<...
+	@$(CC) $(CFLAGS) -c $< -o $@
+
+%.o: %.cpp
+	@echo Compiling $<...
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(EXE).elf: $(OBJS)
+	+$(LD) $^ -o $@ $(CXXFLAGS) $(LDFLAGS)
+
+.PHONY: clean
+clean:
+	rm -f `find . -name \*.o`
+	rm -f $(EXE).elf

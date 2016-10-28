@@ -1,0 +1,36 @@
+CC = gcc
+CXX = g++
+LD = g++
+SDL_CONFIG = ./buildscript/final/bin/sdl2-config
+CFLAGS = -Ofast -fdata-sections -ffunction-sections `$(SDL_CONFIG) --cflags` -DHOMEDIR
+CXXFLAGS = $(CFLAGS) -std=c++11 -fno-exceptions -fno-rtti 
+LDFLAGS =-static-libgcc -static-libstdc++ 
+LDFLAGS += -L./buildscript/final/lib -lSDL2 -lSDL2_mixer
+LDFLAGS += -lX11 -lXext -lXcursor -lXinerama -lXi -lXrandr -lXss -lXxf86vm
+LDFLAGS += -lxcb -lXau -lXrender -lXcursor -lXdmcp -lpthread -lrt -ldl
+LDFLAGS += -lm -Wl,--as-needed,--gc-sections -flto -s
+LDFLAGS += -pthread -ldl
+EXE = nKaruga
+DIRECTORIES = ./src
+OBJS = $(patsubst %.c, %.o, $(shell find $(DIRECTORIES) -name \*.c))
+OBJS += $(patsubst %.cpp, %.o, $(shell find $(DIRECTORIES) -name \*.cpp))
+
+
+#
+all: $(EXE).elf
+
+%.o: %.c
+	@echo Compiling $<...
+	@$(CC) $(CFLAGS) -c $< -o $@
+
+%.o: %.cpp
+	@echo Compiling $<...
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(EXE).elf: $(OBJS)
+	+$(LD) $^ -o $@ $(CXXFLAGS) $(LDFLAGS)
+
+.PHONY: clean
+clean:
+	rm -f `find . -name \*.o`
+	rm -f $(EXE).elf
