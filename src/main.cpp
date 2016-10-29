@@ -1,7 +1,7 @@
 #include "common.h"
 #include "ExplosionEffect.h"
 #include "levels.h" 
-#include "gfx/kanji.h"
+#include "graphics.h"
 #include "misc_data.h"
 
 #ifdef HOMEDIR
@@ -11,6 +11,8 @@
 #include <unistd.h>
 #endif
 #include <stack>
+
+extern void load_all_images();
 
 #define ENEMY_W(i) Level::enemiesArray->data[i].img[0]
 #define ENEMY_H(i) Level::enemiesArray->data[i].img[1]
@@ -165,16 +167,20 @@ int main(int argc, char **argv)
 	// Mix_VolumeMusic(0);
 	
 	printf("Building game LUTs ...\n");
+	initBuffering();
+	load_all_images();
 	buildGameLUTs();
 	printf("Done\n");
 	
 	// Init things
-	initBuffering();
 	clearBufferW();
 	initExplosionEngine();
 	timer_load(1, 0);
 	
 	Level::init(1);
+	
+	
+	
 
 	while(!donePlaying)
 	{
@@ -288,6 +294,7 @@ void playGame()
 	KeyEvent kEv = 0;
 	int pauseTimer = 0;
 	int x = 0, y = 0;
+	int w, h;
 	
 	Rect statsRect, levelRect;
 	int chainColor[3] = { 0 };
@@ -473,7 +480,9 @@ void playGame()
 
 		// Draw remaining lives
 		drawSprite(image_entries[image_LUT_lives], 0, 224, 0, 0);
-		statsRect.x = image_entries[image_LUT_lives][0] + 2;
+		SDL_QueryTexture(image_lives, NULL, NULL, &w, &h);
+		
+		statsRect.x = w + 2;
 		statsRect.y = 226;
 		drawChar(&statsRect.x, &statsRect.y, 0, 'x', 0xffff, 0);
 		drawDecimal(&statsRect.x, &statsRect.y, max(0, Level::p->getLives() - 1), 0xffff, 0);

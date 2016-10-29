@@ -31,6 +31,8 @@ Enemy::~Enemy()
 
 void Enemy::handle()
 {
+	int w, h;
+	SDL_QueryTexture(img, NULL, NULL, &w, &h);
 	Rect er;
 	Rect screenRect;
 	
@@ -55,8 +57,8 @@ void Enemy::handle()
 			spawned -= !!spawned;
 			// Have a relatively big threshold for off-screen movement
 			// Props and ghosts are not deleted if they are outside the screen ; they are supposed to delete themselves when needed
-			if (!prop && !ghost && (fixtoi(screenRect.x) < -img[0] * 2 || fixtoi(screenRect.x) > 319 + img[0] ||
-				fixtoi(screenRect.y) < -img[1] * 2 || fixtoi(screenRect.y) > 239 + img[1]))
+			if (!prop && !ghost && (fixtoi(screenRect.x) < -w * 2 || fixtoi(screenRect.x) > 319 + w ||
+				fixtoi(screenRect.y) < -h * 2 || fixtoi(screenRect.y) > 239 + h))
 			{
 				if (!spawned) deactivate();
 			}
@@ -76,7 +78,7 @@ void Enemy::handle()
 			if (!ghost)
 			{
 				// Check wether the player hit the enemy
-				if(Level::p->isHurtable() && (Level::p->getx() >= screenRect.x - (itofix(img[0]) / 2) && Level::p->getx() < screenRect.x + (itofix(img[0]) / 2)) && (Level::p->gety() >= screenRect.y - (itofix(img[1]) / 2) && Level::p->gety() <= screenRect.y + (itofix(img[1]) / 2)))
+				if(Level::p->isHurtable() && (Level::p->getx() >= screenRect.x - (itofix(w) / 2) && Level::p->getx() < screenRect.x + (itofix(w) / 2)) && (Level::p->gety() >= screenRect.y - (itofix(h) / 2) && Level::p->gety() <= screenRect.y + (itofix(h) / 2)))
 				{
 					Level::p->hurt();
 				}
@@ -149,14 +151,14 @@ bool Enemy::damage(bool _pol, int amount)
 	return damageable;
 }
 
-void Enemy::joint(Entity *target, int targetX, int targetY, int jointX, int jointY, int jointCX, int jointCY, unsigned short *timg, unsigned short *jimg, bool _d)
+void Enemy::joint(Entity *target, int targetX, int targetY, int jointX, int jointY, int jointCX, int jointCY, SDL_Texture *timg, SDL_Texture *jimg, bool _d)
 {
 	isJointed = true;
 	jointObj->activate(target, targetX, targetY, jointX, jointY, jointCX, jointCY, timg, jimg);
 	diesWithJoint = _d;
 }
 
-void Enemy::joint(Entity *target, int targetX, int targetY, int targetCX, int targetCY, int jointX, int jointY, int jointCX, int jointCY, unsigned short *timg, unsigned short *jimg, bool _d)
+void Enemy::joint(Entity *target, int targetX, int targetY, int targetCX, int targetCY, int jointX, int jointY, int jointCX, int jointCY, SDL_Texture *timg, SDL_Texture *jimg, bool _d)
 {
 	isJointed = true;
 	jointObj->activate(target, targetX, targetY, targetCX, targetCY, jointX, jointY, jointCX, jointCY, timg, jimg);
@@ -165,8 +167,10 @@ void Enemy::joint(Entity *target, int targetX, int targetY, int targetCX, int ta
 
 bool Enemy::collide(Fixed _x, Fixed _y, Fixed _cx, Fixed _cy)
 {
+	int w_, h_;
+	SDL_QueryTexture(img, NULL, NULL, &w_, &h_);
 	Fixed x = fToScreenX(getx(), getCamRel()), y = fToScreenY(gety(), getCamRel());
-	Fixed w = itofix(img[0]), h = itofix(img[1]);
+	Fixed w = itofix(w_), h = itofix(h_);
 	Rect temp;
 	rotate(_x, _y, x + _cx, y + _cy, hasRotation ? -rotationAngle : 0, &temp);
 	return temp.x < x + w / 2 && temp.x > x - w / 2 && temp.y < y + h / 2 && temp.y > y - h / 2;
@@ -274,6 +278,7 @@ void Enemy::setAT(int nb, ...)
 // internal[1] : VALUES for moving : 1 ? down, 2 ? left, 3 ? right, 4 ? up ; anything else means no movement
 void Enemy::beAbox()
 {
+	int w, h;
 	Fixed dx = 0, dy = 0;
 	// Moving boxes
 	switch (internal[1] - 1)

@@ -10,18 +10,20 @@ DrawingCandidate::~DrawingCandidate()
 	
 }
 
-void DrawingCandidate::activate(unsigned short *_img, Rect *_pos, bool _flash, int _camRel)
+void DrawingCandidate::activate(SDL_Texture *_img, Rect *_pos, bool _flash, int _camRel)
 {
+	int w, h;
+	SDL_QueryTexture(_img, NULL, NULL, &w, &h);
 	img = _img;
-	pos.x = _pos->x - img[0] / 2;
-	pos.y = _pos->y - img[1] / 2;
+	pos.x = _pos->x - w / 2;
+	pos.y = _pos->y - h / 2;
 	camRel = _camRel;
 	rotates = false;
 	active = true;
 	flash = _flash;
 }
 
-void DrawingCandidate::activate(unsigned short *_img, Rect *_pos, Rect *_center, Fixed _angle, bool _flash, int _camRel)
+void DrawingCandidate::activate(SDL_Texture *_img, Rect *_pos, Rect *_center, Fixed _angle, bool _flash, int _camRel)
 {
 	img = _img;
 	angle = _angle;

@@ -12,10 +12,15 @@ extern "C" {
 #define min(X,Y) (((X) < (Y)) ? (X) : (Y))
 #define max(X,Y) (((X) > (Y)) ? (X) : (Y))
 
+#define RGBA8(r, g, b, a)  ((((a)&0xFF)<<24) | (((b)&0xFF)<<16) | (((g)&0xFF)<<8) | (((r)&0xFF)<<0))
+#define RGBA8_GET_R(c)   (((c) >> 0) & 0xFF)
+#define RGBA8_GET_G(c)   (((c) >> 8) & 0xFF)
+#define RGBA8_GET_B(c)   (((c) >> 16) & 0xFF)
+#define RGBA8_GET_A(c)   (((c) >> 24) & 0xFF)
+
 unsigned short BUFF_BASE_ADDRESS[76800];
 SDL_Window *sdlWindow;
 SDL_Renderer *sdlRenderer;
-SDL_Texture *MAIN_SCREEN;
 
 Uint32 baseFPS;
 
@@ -24,7 +29,7 @@ Uint32 baseFPS;
 void initBuffering()
 {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER);
-	sdlWindow = SDL_CreateWindow("nKaruga", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 320, 240, SDL_WINDOW_FULLSCREEN_DESKTOP);  
+	sdlWindow = SDL_CreateWindow("nKaruga", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 320, 240, 0);  
 	sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_ACCELERATED);
 	SDL_RenderSetLogicalSize(sdlRenderer, 320, 240);
 	if(!sdlWindow || !sdlRenderer)
@@ -34,11 +39,10 @@ void initBuffering()
 		SDL_Quit();
 		exit(1);
 	}
-	MAIN_SCREEN = SDL_CreateTexture(sdlRenderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STREAMING, 320, 240);
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 	
 	/* Clear everything on screen */
-	SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
+	SDL_SetRenderDrawColor(sdlRenderer,255, 255, 255, 255);
 	SDL_RenderClear(sdlRenderer);
 	SDL_RenderPresent(sdlRenderer);
 	
@@ -72,15 +76,6 @@ void constrainFrameRate(int fps)
 
 void updateScreen()
 {
-	int i, j;
-	unsigned int c;
-	void *pixels;
-	int pitch;
-	
-	SDL_LockTexture(MAIN_SCREEN, NULL, &pixels, &pitch);
-	memcpy(pixels,BUFF_BASE_ADDRESS,153600);
-	SDL_UnlockTexture(MAIN_SCREEN);
-	SDL_RenderCopy(sdlRenderer, MAIN_SCREEN, NULL, NULL);
 	SDL_RenderPresent(sdlRenderer);
 	updateKeys();
 }
@@ -93,7 +88,6 @@ void updateKeys()
 
 void deinitBuffering()
 {
-	SDL_DestroyTexture(MAIN_SCREEN);
 	SDL_DestroyRenderer(sdlRenderer);
 	SDL_DestroyWindow(sdlWindow);
 	SDL_Quit();
@@ -148,7 +142,7 @@ Fixed fixcos(Fixed angle)
 	return cosLUT[angle & 0xff];
 }
 
- void rotate(int x, int y, int cx, int cy, Fixed angle, Rect *out)
+void rotate(int x, int y, int cx, int cy, Fixed angle, Rect *out)
 {
 	x -= cx;
 	y -= cy;
@@ -169,22 +163,22 @@ void getBoundingBox(int x, int y, int w, int h, int cx, int cy, Fixed angle, Rec
 	out->h = max(max(max(tl.y, tr.y), bl.y), br.y) - out->y;
 }
 
- int sq(int x)
+int sq(int x)
 {
 	return x * x;
 }
 
- Fixed fixsq(Fixed x)
+Fixed fixsq(Fixed x)
 {
 	return fixmul(x, x);
 }
 
- int cube(int x)
+int cube(int x)
 {
 	return x * x * x;
 }
 
- Fixed fixcube(Fixed x)
+Fixed fixcube(Fixed x)
 {
 	return fixmul(fixmul(x, x), x);
 }
@@ -217,81 +211,62 @@ int interpolatePathFloat(int curT, float _x[], float _y[], int _t[], int nb, Rec
 
 void clearBufferB()
 {
-	int i;
-	for(i = 0; i < 160 * 240; i++)
-		((unsigned int*)BUFF_BASE_ADDRESS)[i] = 0;
+	SDL_SetRenderDrawColor(sdlRenderer,0, 0, 0, 255);
+	SDL_RenderClear(sdlRenderer);
 }
 
 void clearBufferW()
 {
-	int i;
-	for(i = 0; i < 160 * 240; i++)
-		((unsigned int*)BUFF_BASE_ADDRESS)[i] = 0xffffffff;
+	SDL_SetRenderDrawColor(sdlRenderer,255, 255, 255, 255);
+	SDL_RenderClear(sdlRenderer);
 }
 
 void clearBuffer(unsigned short c)
 {
-	int i;
-	unsigned int ci = (c << 16) | c;
-	for(i = 0; i < 160 * 240; i++)
-			*((unsigned int*)BUFF_BASE_ADDRESS + i) = ci;
+	SDL_SetRenderDrawColor(sdlRenderer,0, 0, 0, 255);
+	SDL_RenderClear(sdlRenderer);
 }
 
-inline unsigned short getPixelUnsafe(const unsigned short *src, unsigned int x, unsigned int y)
+inline unsigned short getPixelUnsafe(const unsigned short* src, unsigned int x, unsigned int y)
 {
-	return src[x + y * src[0] + 3];
+	/*return src[x + y * src[0] + 3];*/
 }
 
-unsigned short getPixel(const unsigned short *src, unsigned int x, unsigned int y)
+unsigned short getPixel(const unsigned short* src, unsigned int x, unsigned int y)
 {
-	if(x < src[0] && y < src[1])
+	/*if(x < src[0] && y < src[1])
 		return src[x + y * src[0] + 3];
 	else
-		return src[2];
+		return src[2];*/
 }
 
- inline void setPixelUnsafe(unsigned int x, unsigned int y, unsigned short c)
+inline void setPixelUnsafe(unsigned int x, unsigned int y, unsigned short c)
 {
-	*((unsigned short*)BUFF_BASE_ADDRESS + x + y * 320) = c;
+	SDL_SetRenderDrawColor(sdlRenderer, RGBA8_GET_R(c), RGBA8_GET_G(c), RGBA8_GET_B(c), RGBA8_GET_A(c));
+	SDL_RenderDrawPoint (sdlRenderer, 0, 0);
 }
 
- void setPixel(unsigned int x, unsigned int y, unsigned short c)
+void setPixel(unsigned int x, unsigned int y, unsigned short c)
 {
-	if(x < 320 && y < 240)
-		*((unsigned short*)BUFF_BASE_ADDRESS + x + y * 320) = c;
+	SDL_SetRenderDrawColor(sdlRenderer, RGBA8_GET_R(c), RGBA8_GET_G(c), RGBA8_GET_B(c), RGBA8_GET_A(c));
+	SDL_RenderDrawPoint (sdlRenderer, 0, 0);
 }
 
  void setPixelRGB(unsigned int x, unsigned int y, unsigned char r, unsigned char g, unsigned char b)
 {
-	if(x < 320 && y < 240)
-		*((unsigned short*)BUFF_BASE_ADDRESS + x + y * 320) = ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3);
+	SDL_SetRenderDrawColor(sdlRenderer, r, g, b, 255);
+	SDL_RenderDrawPoint (sdlRenderer, 0, 0);
 }
 
 void drawHLine(int y, int x1, int x2, unsigned short c)
 {
-	unsigned int _x1, _x2;
-	if((x1 & x2) >> 31 || x1 + x2 >= 640 || (unsigned)y > 239)
-	{
-		return;
-	}
-	
-	if(x1 < x2)
-	{
-		_x1 = max(x1, 0);
-		_x2 = min(x2, 319);
-	}
-	else
-	{
-		_x1 = max(x2, 0);
-		_x2 = min(x1, 319);
-	}
-	for(; _x1 <= _x2; _x1++)
-		setPixelUnsafe(_x1, y, c);
+	SDL_SetRenderDrawColor(sdlRenderer, RGBA8_GET_R(c), RGBA8_GET_G(c), RGBA8_GET_B(c), RGBA8_GET_A(c));
+	SDL_RenderDrawLine(sdlRenderer, x1, y, x2, y);
 }
 
 void drawVLine(int x, int y1, int y2, unsigned short c)
 {
-	unsigned int _y1, _y2;
+	/*unsigned int _y1, _y2;
 	if((y1 & y2) >> 31 || y1 + y2 >= 480 || (unsigned)x > 319)
 	{
 		return;
@@ -308,37 +283,36 @@ void drawVLine(int x, int y1, int y2, unsigned short c)
 		_y2 = min(y1, 239);
 	}
 	for(; _y1 <= _y2; _y1++)
-		setPixelUnsafe(x, _y1, c);
+		setPixelUnsafe(x, _y1, c);*/
 }
 
 void fillRect(int x, int y, int w, int h, unsigned short c)
 {
-	unsigned int _x = max(x, 0), _y = max(y, 0), _w = min(320 - _x, w - _x + x), _h = min(240 - _y, h - _y + y), i, j;
+	/*unsigned int _x = max(x, 0), _y = max(y, 0), _w = min(320 - _x, w - _x + x), _h = min(240 - _y, h - _y + y), i, j;
 	if(_x < 320 && _y < 240)
 	{
 		for(j = _y; j < _y + _h; j++)
 			for(i = _x; i < _x + _w; i++)
 				setPixelUnsafe(i, j, c);
-	}
+	}*/
 }
 
-void drawSprite(const unsigned short *src, int _x, int _y, int flash, unsigned short flashColor)
+void drawSprite(SDL_Texture *src, int _x, int _y, int flash, unsigned short flashColor)
 {
-	int x, y, w = src[0] + _x, h = src[1] + _y, c = 3;
-	for(y = _y; y < h; y++)
-	{
-		for(x = _x; x < w; x++, c++)
-		{
-			if(src[c] != src[2])
-				setPixel(x, y, flash ? flashColor : src[c]);
-		}
-		if(y > 239) break;
-	}
+	unsigned int w, h;
+	SDL_QueryTexture(src, NULL, NULL, &w, &h);
+
+	SDL_Rect position;
+	position.x = _x;
+	position.y = _y;
+	position.w = w;
+	position.h = h;
+	SDL_RenderCopy(sdlRenderer, src, NULL, &position);
 }
 
-void drawSpritePart(const unsigned short *src, int _x, int _y, const Rect* part, int flash, unsigned short flashColor)
+void drawSpritePart(SDL_Texture* src, int _x, int _y, const Rect* part, int flash, unsigned short flashColor)
 {
-	unsigned short c;
+	/*unsigned short c;
 	int x, y, w = part->w + _x, h = part->h + _y, z = part->x, t = part->y;
 	for(y = _y; y < h; y++, t++)
 	{
@@ -350,12 +324,12 @@ void drawSpritePart(const unsigned short *src, int _x, int _y, const Rect* part,
 			if(x > 319) break;
 		}
 		if(y > 239) break;
-	}
+	}*/
 }
 
-void drawSpriteScaled(const unsigned short* source, const Rect* info, int flash, unsigned short flashColor)
+void drawSpriteScaled(SDL_Texture* source, const Rect* info, int flash, unsigned short flashColor)
 {
-	Fixed dx = itofix(source[0]) / info->w;
+	/*Fixed dx = itofix(source[0]) / info->w;
 	Fixed dy = itofix(source[1]) / info->h;
 	int x, y, _x = info->x + info->w / 2, _y = info->y + info->h / 2;
 	Fixed tx = 0, ty = 0;
@@ -371,12 +345,13 @@ void drawSpriteScaled(const unsigned short* source, const Rect* info, int flash,
 			if(x > 319) break;
 		}
 		if(y > 239) break;
-	}
+	}*/
 }
 
-void drawSpriteRotated(const unsigned short* source, const Rect* sr, const Rect* rc, Fixed angle, int flash, unsigned short flashColor)
+void drawSpriteRotated(SDL_Texture* source, const Rect* sr, const Rect* rc, Fixed angle, int flash, unsigned short flashColor)
 {
-	Rect defaultRect = { source[0] / 2, source[1] / 2, 0, 0 };
+	printf("Angle %d\n", angle);
+	/*Rect defaultRect = { source[0] / 2, source[1] / 2, 0, 0 };
 	Rect fr;
 	unsigned short currentPixel;
 	Fixed dX = fixcos(angle), dY = fixsin(angle);
@@ -416,7 +391,7 @@ void drawSpriteRotated(const unsigned short* source, const Rect* sr, const Rect*
 		
 		lsp.x -= dY;
 		lsp.y += dX;
-	}
+	}*/
 }
 
 /*            *
@@ -702,60 +677,29 @@ int isKey(t_key k1, t_key k2)
 	return k1 == k2;
 }
 
-// Loads a 24-bits bitmap image into an n2DLib-compatible unsigned short* array
-unsigned short *loadBMP(const char *path, unsigned short transparency)
+SDL_Texture* Load_Image(const char* directory)
 {
-	int size, width, height, offset, i, j;
-	uint16_t *returnValue;
-	FILE *temp = fopen(path, "rb");
-	
-	if(!temp) return NULL;
-	// Check if the file's 2 first char are BM (indicates bitmap)
-	if(!(fgetc(temp) == 0x42 && fgetc(temp) == 0x4d))
+	int w, h;
+	SDL_Surface* tmp;
+	SDL_Texture *tmp2;
+
+	tmp = IMG_Load(directory);
+	if (tmp)
 	{
-		printf("Image is not a bitmap\n");
-		fclose(temp);
+		SDL_SetColorKey(tmp, 1, SDL_MapRGB(tmp->format, 255, 0, 255));
+		SDL_SetSurfaceRLE(tmp, 1);
+		tmp2 = SDL_CreateTextureFromSurface(sdlRenderer, tmp);
+		SDL_FreeSurface(tmp);
+	}
+	else
+	{
+		printf("ERROR, COULD NOT LOAD IMAGE %s !!!\n", directory);
 		return NULL;
 	}
-	
-	// Check if the file is in 24 bpp
-	fseek(temp, 0x1c, SEEK_SET);
-	if(fgetc(temp) != 24)
-	{
-		printf("Wrong format : bitmap must use 24 bpp\n");
-		fclose(temp);
-		return NULL;
-	}
-	
-	// Get the 4-bytes pixel width and height, situated respectively at 0x12 and 0x16
-	fseek(temp, 0x12, SEEK_SET);
-	width = fgetc(temp) | (fgetc(temp) << 8) | (fgetc(temp) << 16) | (fgetc(temp) << 24);
-	fseek(temp, 0x16, SEEK_SET);
-	height = fgetc(temp) | (fgetc(temp) << 8) | (fgetc(temp) << 16) | (fgetc(temp) << 24);
-	size = width * height + 3; // include header
-	
-	// Gets the 4-bytes offset to the start of the pixel table, situated at 0x0a
-	fseek(temp, 0x0a, SEEK_SET);
-	offset = fgetc(temp) | (fgetc(temp) << 8) | (fgetc(temp) << 16) | (fgetc(temp) << 24);
-	
-	fseek(temp, offset, SEEK_SET);
-	
-	returnValue = (uint16_t*)malloc(size * sizeof(unsigned short));
-	if(!returnValue)
-	{
-		printf("Couldn't allocate memory\n");
-		fclose(temp);
-		return NULL;
-	}
-	returnValue[0] = width;
-	returnValue[1] = height;
-	returnValue[2] = transparency;
-	for(j = height - 1; j >= 0; j--)
-		for(i = 0; i < width; i++)
-			returnValue[j * width + i + 3] = (unsigned short)((fgetc(temp) >> 3) | ((fgetc(temp) >> 2) << 5) | ((fgetc(temp) >> 3) << 11));
-	fclose(temp);
-	return returnValue;
+
+	return tmp2;
 }
+
 
 #ifdef __cplusplus
 }

@@ -15,6 +15,8 @@ BulletArray::~BulletArray()
 
 void BulletArray::handle()
 {
+	int w, h;
+	
 	bool destroyBullet;
 	int bossDamaged;
 	
@@ -30,9 +32,10 @@ void BulletArray::handle()
 				// Check collisions with player if he's not dead already
 				if(cb->getPolarity() != Level::p->getPolarity())
 				{
+					SDL_QueryTexture(cb->img, NULL, NULL, &w, &h);
 					// the player has a 1px hitbox (for now) (but that actually seems to Level::be enough)
-					if(Level::p->getx() >= cb->getx() - itofix(cb->img[0] / 2) && Level::p->getx() < cb->getx() + itofix(cb->img[0] / 2)
-					&& Level::p->gety() >= cb->gety() - itofix(cb->img[1] / 2) && Level::p->gety() < cb->gety() + itofix(cb->img[1] / 2))
+					if(Level::p->getx() >= cb->getx() - itofix(w / 2) && Level::p->getx() < cb->getx() + itofix(w / 2)
+					&& Level::p->gety() >= cb->gety() - itofix(h / 2) && Level::p->gety() < cb->gety() + itofix(h / 2))
 					{
 						Level::p->hurt();
 						destroyBullet = true;
@@ -132,7 +135,8 @@ void BulletArray::handle()
 				}
 				else
 				{
-					if(sq(fixtoi(cf->getx() - Level::p->getx())) + sq(fixtoi(cf->gety() - Level::p->gety())) < sq(Level::p->img[0][0] / 2))
+					SDL_QueryTexture(Level::p->img[0], NULL, NULL, &w, &h);
+					if(sq(fixtoi(cf->getx() - Level::p->getx())) + sq(fixtoi(cf->gety() - Level::p->gety())) < sq(w / 2))
 					{
 						destroyBullet = true;
 						G_score += SCORE_ABSORB * 10;
@@ -151,10 +155,11 @@ void BulletArray::handle()
 						Enemy *ce = &Level::enemiesArray->data[i];
 						if(ce->isActive() && (ce->isDamageable() || !ce->isProp()))
 						{
-							if(cf->getx() - itofix(4) <= fToScreenX(ce->getx(), ce->getCamRel()) + itofix(ce->img[0] / 2) &&
-							cf->getx() + itofix(4) >= fToScreenX(ce->getx(), ce->getCamRel()) - itofix(ce->img[0] / 2) &&
-							cf->gety() - itofix(4) <= fToScreenY(ce->gety(), ce->getCamRel()) + itofix(ce->img[1] / 2) &&
-							cf->gety() + itofix(4) >= fToScreenY(ce->gety(), ce->getCamRel()) - itofix(ce->img[1] / 2))
+							SDL_QueryTexture(ce->img, NULL, NULL, &w, &h);
+							if(cf->getx() - itofix(4) <= fToScreenX(ce->getx(), ce->getCamRel()) + itofix(w / 2) &&
+							cf->getx() + itofix(4) >= fToScreenX(ce->getx(), ce->getCamRel()) - itofix(w / 2) &&
+							cf->gety() - itofix(4) <= fToScreenY(ce->gety(), ce->getCamRel()) + itofix(h / 2) &&
+							cf->gety() + itofix(4) >= fToScreenY(ce->gety(), ce->getCamRel()) - itofix(h / 2))
 							{
 								if(ce->damage(cf->getPolarity(), 10))
 									G_score += cf->getPolarity() != ce->getPolarity() ? SCORE_HIT_OP : SCORE_HIT;
@@ -215,7 +220,8 @@ void BulletArray::handle()
 				}
 				else
 				{
-					if(sq(fixtoi(ch->getx() - Level::p->getx())) + sq(fixtoi(ch->gety() - Level::p->gety())) < sq(Level::p->img[0][0] / 2))
+					SDL_QueryTexture(Level::p->img[0], NULL, NULL, &w, &h);
+					if(sq(fixtoi(ch->getx() - Level::p->getx())) + sq(fixtoi(ch->gety() - Level::p->gety())) < sq(w / 2))
 					{
 						destroyBullet = true;
 						G_score += SCORE_ABSORB * 5;
@@ -277,8 +283,10 @@ void BulletArray::handle()
 							}
 							else
 							{
-								int temp1 = a * (fixtoi(Level::p->getx()) - Level::p->img[0][0] / 2) + b * fixtoi(Level::p->gety());
-								int temp2 = a * (fixtoi(Level::p->getx()) + Level::p->img[0][0] / 2) + b * fixtoi(Level::p->gety());
+								int w, h;
+								SDL_QueryTexture(Level::p->img[0], NULL, NULL, &w, &h);
+								int temp1 = a * (fixtoi(Level::p->getx()) - w / 2) + b * fixtoi(Level::p->gety());
+								int temp2 = a * (fixtoi(Level::p->getx()) + w / 2) + b * fixtoi(Level::p->gety());
 							
 								if(sign(temp1 + c1) != sign(temp1 + c2) || sign(temp2 + c1) != sign(temp2 + c2))
 								{

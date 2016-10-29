@@ -1,7 +1,6 @@
 #include "common.h"
 #include "levels.h"
-#include "gfx/kanji.h"
-#include "gfx/end_of_demo.h"
+#include "graphics.h"
 
 void (*Level::executeIntro)() = NULL;
 int Level::phase = 0;
@@ -319,7 +318,7 @@ void Level::updateBg()
 
 // Introductions
 static const char *levelStrs[5] = { "Chapter 1\nIdeal", "Chapter 2\nTrial", "Chapter 3\nFaith", "Chapter 4\nReality", "Chapter 5\nMetempsychosis" };
-static unsigned short *levelKanjis[2] = { image_kanji_1, image_kanji_2 };
+static SDL_Texture *levelKanjis[2] = { image_kanji_1, image_kanji_2 };
 
 void Level::intro1()
 {

@@ -2,6 +2,7 @@
 
 #define VSPACE 9
 
+/*
 const static unsigned short image_cursor[] = { 5, 8, 1,
 0, 0, 1, 1, 1,
 1, 0, 0, 1, 1,
@@ -12,6 +13,7 @@ const static unsigned short image_cursor[] = { 5, 8, 1,
 1, 0, 0, 1, 1,
 0, 0, 1, 1, 1
 };
+*/
 
 Menu::Menu(int _num, ...)
 {
@@ -101,10 +103,10 @@ int Menu::run()
 			}
 		}
 
-		drawSprite(image_cursor, x[choice] - 7, y[choice], 0, 0);
+		//drawSprite(image_cursor, x[choice] - 7, y[choice], 0, 0);
 		updateScreen();
 		updateKeys();
-		drawSprite(image_cursor, x[choice] - 7, y[choice], 1, 0xffff);
+		//drawSprite(image_cursor, x[choice] - 7, y[choice], 1, 0xffff);
 
 		// Let the user pick an option or fiddle with the values
 		if (isKeyPressed(G_downKey))

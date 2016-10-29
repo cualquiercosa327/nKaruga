@@ -17,12 +17,16 @@ void cb_bgHandle_2_2(BackgroundScroller *bg)
 
 backgroundHandle bgHandle[] = { cb_bgHandle_default, cb_bgHandle_2_2 };
 
-BackgroundScroller::BackgroundScroller(unsigned short *bg, Fixed _x, Fixed _y, Fixed sscale, Fixed dscale, int bgHandleID) // x is left-top corner, y is center (ugly but purpose-built)
+BackgroundScroller::BackgroundScroller(SDL_Texture *bg, Fixed _x, Fixed _y, Fixed sscale, Fixed dscale, int bgHandleID) // x is left-top corner, y is center (ugly but purpose-built)
 {
-	img = &(bg[3]);
-	w = bg[0];
-	h = bg[1];
-	colorKey = bg[2];
+	int w_, h_;
+	SDL_QueryTexture(bg, NULL, NULL, &w_, &h_);
+	//img = &(bg[3]);
+	img = bg;
+	w = w_;
+	h = h_;
+	colorKey = 0;
+	//colorKey = bg[2];
 	x = itofix(_x);
 	y = itofix(_y - h / 2);
 	dx = 0;
@@ -38,7 +42,7 @@ BackgroundScroller::~BackgroundScroller()
 
 void BackgroundScroller::draw()
 {
-	Fixed sourceX = -((x + fixmul(dx, scrollScale)) % itofix(w)) + itofix(w),
+	/*Fixed sourceX = -((x + fixmul(dx, scrollScale)) % itofix(w)) + itofix(w),
 		sourceY = -((y + fixmul(dy, scrollScale)) % itofix(h)) + itofix(h);
 	sourceX %= itofix(w);
 	sourceY %= itofix(h);
@@ -53,7 +57,7 @@ void BackgroundScroller::draw()
 			if (c != colorKey)
 				setPixelUnsafe(sx, sy, c);
 		}
-	}
+	}*/
 }
 
 void BackgroundScroller::update()

@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <SDL.h>
+#include <SDL_image.h>
 
 #if defined(__cplusplus) && !defined(min) && !defined(max)
 inline int min(int a, int b)
@@ -69,10 +70,10 @@ extern void setPixelRGB(unsigned int, unsigned int, unsigned char, unsigned char
 extern void drawHLine(int, int, int, unsigned short);
 extern void drawVLine(int, int, int, unsigned short);
 extern void fillRect(int, int, int, int, unsigned short);
-extern void drawSprite(const unsigned short*, int, int, int, unsigned short);
-extern void drawSpritePart(const unsigned short*, int, int, const Rect*, int, unsigned short);
-extern void drawSpriteScaled(const unsigned short*, const Rect*, int, unsigned short);
-extern void drawSpriteRotated(const unsigned short*, const Rect*, const Rect*, Fixed, int, unsigned short);
+extern void drawSprite(SDL_Texture*, int, int, int, unsigned short);
+extern void drawSpritePart(SDL_Texture*, int, int, const Rect*, int, unsigned short);
+extern void drawSpriteScaled(SDL_Texture*, const Rect*, int, unsigned short);
+extern void drawSpriteRotated(SDL_Texture*, const Rect*, const Rect*, Fixed, int, unsigned short);
 extern void drawLine(int, int, int, int, unsigned short);
 extern void drawPolygon(unsigned short, int, ...);
 extern void fillCircle(int, int, int, unsigned short);
@@ -92,6 +93,8 @@ extern unsigned short * loadBMP(const char*, unsigned short);
 #define BUFF_BYTES_SIZE (320*240*2)
 extern unsigned short BUFF_BASE_ADDRESS[320 * 240];
 extern SDL_Texture *MAIN_SCREEN;
+
+extern SDL_Texture* Load_Image(const char* directory);
 
 // Global key state
 extern const t_key *G_keys;

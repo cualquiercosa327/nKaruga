@@ -39,8 +39,10 @@ void cb_Pattern_1_2(cb_args)
 }
 void cb_Pattern_1_3(cb_args)
 {
+	int w, h;
+	SDL_QueryTexture(e->img, NULL, NULL, &w, &h);
 	Rect screenRect;
-	e->setAX(3, 320.0, 160.0 + e->waveIndex * e->img[0] / 2.0, 320.0);
+	e->setAX(3, 320.0, 160.0 + e->waveIndex * w / 2.0, 320.0);
 	e->setAY(3, 0.0, 120.0, 240.0);
 	e->internal[1] = (5 - e->waveIndex) * 16 * 2 + 120;
 	e->setAT(3, 0, (5 - e->waveIndex) * 16 + 60, e->internal[1]);
@@ -53,8 +55,10 @@ void cb_Pattern_1_3(cb_args)
 
 void cb_Pattern_1_4(cb_args)
 {
+	int w, h;
+	SDL_QueryTexture(e->img, NULL, NULL, &w, &h);
 	Rect screenRect;
-	e->setAX(3, 0.0, 160.0 - (e->waveIndex - 6) * e->img[0] / 2.0, 0.0);
+	e->setAX(3, 0.0, 160.0 - (e->waveIndex - 6) * w / 2.0, 0.0);
 	e->setAY(3, 0.0, 120.0, 240.0);
 	e->internal[1] = (5 - (e->waveIndex - 6)) * 16 * 2 + 120;
 	e->setAT(3, 0, (5 - (e->waveIndex - 6)) * 16 + 60, e->internal[1]);
@@ -197,6 +201,8 @@ void cb_Pattern_1_12(cb_args)
 
 void cb_Pattern_1_13(cb_args)
 {
+	int w, h;
+	
 	e->rotationAngle = 16 + fixcos(Level::waveTimer) / 16;
 	if (!e->internal[1])
 	{
@@ -216,7 +222,8 @@ void cb_Pattern_1_13(cb_args)
 				for (int i = 0; i < 4; i++)
 				{
 					int k = i * 8 - 20 + 48;
-					Level::bArray->add(fixcos(k + (e->internal[0] - 3) * 8) * e->img[0] / 2 + e->getx(), fixsin(k + (e->internal[0] - 3) * 8) * e->img[1] / 2 + e->gety(),
+					SDL_QueryTexture(e->img, NULL, NULL, &w, &h);
+					Level::bArray->add(fixcos(k + (e->internal[0] - 3) * 8) * w / 2 + e->getx(), fixsin(k + (e->internal[0] - 3) * 8) * h / 2 + e->gety(),
 						k, (e->internal[0] - 2) * 64 + itofix(1), image_LUT_enemy_bullet_0_light, e->polarity, true, e->getCamRel());
 				}
 				e->internal[0]++;
@@ -238,8 +245,8 @@ void cb_Pattern_1_13(cb_args)
 						int k = (i - 2) * 16 + 48;
 						for (int j = 0; j < 3; j++)
 						{
-
-							Level::bArray->add(fixcos(k) * e->img[0] / 2 + e->getx() - fixsin(k) * (j - 1) * 6, fixsin(k) * e->img[1] / 2 + e->gety() + fixcos(k) * (j - 1) * 6,
+							SDL_QueryTexture(e->img, NULL, NULL, &w, &h);
+							Level::bArray->add(fixcos(k) * w / 2 + e->getx() - fixsin(k) * (j - 1) * 6, fixsin(k) * h / 2 + e->gety() + fixcos(k) * (j - 1) * 6,
 								k, itofix(2), image_LUT_enemy_bullet_2_light, e->polarity, true, e->getCamRel());
 						}
 					}
@@ -254,6 +261,7 @@ void cb_Pattern_1_13(cb_args)
 
 void cb_Pattern_1_14(cb_args)
 {
+	int w, h;
 	e->rotationAngle = -16 + fixcos(Level::waveTimer) / 16;
 	if (e->gety() < itofix(30))
 	{
@@ -268,7 +276,8 @@ void cb_Pattern_1_14(cb_args)
 				for (int i = 0; i < 4; i++)
 				{
 					int k = i * 8 - 20 + 80;
-					Level::bArray->add(fixcos(k - (e->internal[0] - 3) * 8) * e->img[0] / 2 + e->getx(), fixsin(k - (e->internal[0] - 3) * 8) * e->img[1] / 2 + e->gety(),
+					SDL_QueryTexture(e->img, NULL, NULL, &w, &h);
+					Level::bArray->add(fixcos(k - (e->internal[0] - 3) * 8) * w / 2 + e->getx(), fixsin(k - (e->internal[0] - 3) * 8) * h / 2 + e->gety(),
 						k, (e->internal[0] - 2) * 64 + itofix(1), image_LUT_enemy_bullet_0_light, e->polarity, true, e->getCamRel());
 				}
 				e->internal[0]++;
@@ -291,7 +300,8 @@ void cb_Pattern_1_14(cb_args)
 						for (int j = 0; j < 3; j++)
 						{
 
-							Level::bArray->add(fixcos(k) * e->img[0] / 2 + e->getx() - fixsin(k) * (j - 1) * 6, fixsin(k) * e->img[1] / 2 + e->gety() + fixcos(k) * (j - 1) * 6,
+							SDL_QueryTexture(e->img, NULL, NULL, &w, &h);
+							Level::bArray->add(fixcos(k) * w / 2 + e->getx() - fixsin(k) * (j - 1) * 6, fixsin(k) * h / 2 + e->gety() + fixcos(k) * (j - 1) * 6,
 								k, itofix(2), image_LUT_enemy_bullet_2_light, e->polarity, true, e->getCamRel());
 						}
 					}
@@ -392,6 +402,8 @@ void cb_Pattern_1_18(cb_args)
 
 void cb_Pattern_1_19(cb_args)
 {
+	int w, h;
+	SDL_QueryTexture(e->img, NULL, NULL, &w, &h);
 	if (!e->internal[3])
 	{
 		e->internal[3] = 1;
@@ -405,22 +417,22 @@ void cb_Pattern_1_19(cb_args)
 		{
 		case 1:
 			e->addy(e->internal[1]);
-			if (e->gety() <= itofix(e->img[1] / 2) || e->gety() >= itofix(240 - e->img[1] / 2 - 15))
+			if (e->gety() <= itofix(h / 2) || e->gety() >= itofix(240 - h / 2 - 15))
 				e->internal[2]++;
 			break;
 		case 2:
 			e->subx(e->internal[0]);
-			if (e->getx() <= itofix(e->img[0] / 2 + 20) || e->getx() >= itofix(320 - e->img[0] / 2 - 20))
+			if (e->getx() <= itofix(w / 2 + 20) || e->getx() >= itofix(320 - w / 2 - 20))
 				e->internal[2]++;
 			break;
 		case 3:
 			e->suby(e->internal[1]);
-			if (e->gety() <= itofix(e->img[1] / 2) || e->gety() >= itofix(240 - e->img[1] / 2 - 15))
+			if (e->gety() <= itofix(h / 2) || e->gety() >= itofix(240 - h / 2 - 15))
 				e->internal[2]++;
 			break;
 		default:
 			e->addx(e->internal[0]);
-			if (e->getx() == itofix(e->img[0] / 2 + 20) || e->getx() == itofix(320 - e->img[0] / 2 - 20))
+			if (e->getx() == itofix(w / 2 + 20) || e->getx() == itofix(320 - w / 2 - 20))
 				e->internal[2]++;
 		}
 	}

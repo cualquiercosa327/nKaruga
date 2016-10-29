@@ -1,4 +1,5 @@
 #include "common.h"
+#include "graphics.h"
 
 #define FRAME_DELAY 4
 #define EXPLOSION_W image_entries[image_LUT_explosion_light_0][0]
@@ -16,8 +17,11 @@ ExplosionAnim::~ExplosionAnim()
 
 void ExplosionAnim::activate(int _x, int _y, bool _p)
 {
-	x = _x - EXPLOSION_W / 2;
-	y = _y - EXPLOSION_H / 2;
+	int w, h;
+	SDL_QueryTexture(image_explosion_light_0, NULL, NULL, &w, &h);
+	
+	x = _x - w / 2;
+	y = _y - h / 2;
 	polarity = _p;
 	counter = 6 * FRAME_DELAY;
 }

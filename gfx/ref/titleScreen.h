@@ -1,0 +1,161 @@
+SDL_Texture* image_titleScreen;
+SDL_Texture * image_kanji_1;
+SDL_Texture * image_kanji_2;
+SDL_Texture * image_end_of_demo;
+SDL_Texture * image_bossWarning;
+SDL_Texture * image_bg1_0;
+SDL_Texture * image_bg1_1;
+SDL_Texture * image_bg1_2;
+SDL_Texture * image_bg1_3;
+SDL_Texture * image_bg1_4;
+SDL_Texture * image_bg2_0;
+SDL_Texture * image_bg2_1;
+SDL_Texture * image_bg2_2;
+SDL_Texture * image_bg2_3;
+SDL_Texture * image_bg2_4;
+SDL_Texture * image_bg2_5;
+SDL_Texture * image_bg2_6;
+SDL_Texture * image_bg2_7;
+
+/*
+ * Boss 1
+ */
+
+SDL_Texture * bossImage_1_body;
+SDL_Texture * bossImage_1_leftarm_armed;
+SDL_Texture * bossImage_1_rightarm_armed1;
+SDL_Texture * bossImage_1_rightarm_armed2;
+SDL_Texture * bossImage_1_leftarm_nonarmed;
+
+SDL_Texture * bossImage_1_rightarm_nonarmed;
+
+/*
+ * Boss 2
+ */
+
+SDL_Texture * bossImage_2_body;
+SDL_Texture * bossImage_2_leftShield;
+SDL_Texture * bossImage_2_rightShield;
+SDL_Texture * bossImage_2_leftArm;
+SDL_Texture * bossImage_2_rightArm;
+SDL_Texture * bossImage_2_leftUpperArm;
+SDL_Texture * bossImage_2_rightUpperArm;
+SDL_Texture * bossImage_2_leftWing;
+SDL_Texture * bossImage_2_leftWingOpening_1;
+SDL_Texture * bossImage_2_leftWingOpening_2;
+SDL_Texture * bossImage_2_leftWingOpening_3;
+SDL_Texture * bossImage_2_leftWingOpening_4;
+SDL_Texture * bossImage_2_rightWing;
+SDL_Texture * bossImage_2_rightWingOpening_1;
+SDL_Texture * bossImage_2_rightWingOpening_2;
+SDL_Texture * bossImage_2_rightWingOpening_3;
+SDL_Texture * bossImage_2_rightWingOpening_4;
+SDL_Texture * bossImage_2_rails;
+SDL_Texture * bossImage_2_hitpoint_left_1;
+SDL_Texture * bossImage_2_hitpoint_left_2;
+SDL_Texture * bossImage_2_hitpoint_left_3;
+SDL_Texture * bossImage_2_hitpoint_left_4;
+SDL_Texture * bossImage_2_hitpoint_left_5;
+SDL_Texture * bossImage_2_hitpoint_right_1;
+SDL_Texture * bossImage_2_hitpoint_right_2;
+SDL_Texture * bossImage_2_hitpoint_right_3;
+SDL_Texture * bossImage_2_hitpoint_right_4;
+SDL_Texture * bossImage_2_hitpoint_right_5;
+
+
+/* GFX */
+
+SDL_Texture * box_light_1;
+SDL_Texture * box_light_2;
+SDL_Texture * box_light_3;
+SDL_Texture * box_light_4;
+SDL_Texture * box_light_5;
+SDL_Texture * box_light_6;
+SDL_Texture * box_shadow_1;
+SDL_Texture * box_shadow_2;
+SDL_Texture * box_shadow_3;
+SDL_Texture * box_shadow_4;
+SDL_Texture * box_shadow_5;
+SDL_Texture * box_shadow_6;
+SDL_Texture * box_solid_1;
+SDL_Texture * box_solid_2;
+SDL_Texture * box_solid_3;
+SDL_Texture * box_solid_4;
+SDL_Texture * box_solid_5;
+SDL_Texture * box_solid_6;
+SDL_Texture * chain_hit_light;
+SDL_Texture * chain_hit_shadow;
+SDL_Texture * door_left;
+SDL_Texture * door_right;
+SDL_Texture * enemy_bullet_0_light;
+SDL_Texture * enemy_bullet_0_shadow;
+SDL_Texture * enemy_bullet_1_light;
+SDL_Texture * enemy_bullet_1_shadow;
+SDL_Texture * enemy_bullet_2_light;
+SDL_Texture * enemy_bullet_2_shadow;
+SDL_Texture * enemy_generator_light;
+SDL_Texture * enemy_generator_shadow;
+SDL_Texture * enemy_homing_bullet_light;
+SDL_Texture * enemy_homing_bullet_shadow;
+SDL_Texture * enemy_ship_0_light;
+SDL_Texture * enemy_ship_0_shadow;
+SDL_Texture * enemy_ship_1_light;
+SDL_Texture * enemy_ship_1_shadow;
+SDL_Texture * enemy_ship_2_light;
+SDL_Texture * enemy_ship_2_shadow;
+SDL_Texture * enemy_ship_3_light;
+SDL_Texture * enemy_ship_3_shadow;
+SDL_Texture * enemy_ship_4_lightball;
+SDL_Texture * enemy_ship_4_light;
+SDL_Texture * enemy_ship_4_shadowball;
+SDL_Texture * enemy_ship_4_shadow;
+SDL_Texture * enemy_ship_5_light;
+SDL_Texture * enemy_ship_5_shadow;
+SDL_Texture * enemy_ship_6_light;
+SDL_Texture * enemy_ship_6_shadow;
+SDL_Texture * enemy_wall_light;
+SDL_Texture * enemy_wall_shadow;
+SDL_Texture * explosion_light_0;
+SDL_Texture * explosion_light_1;
+SDL_Texture * explosion_light_2;
+SDL_Texture * explosion_light_3;
+SDL_Texture * explosion_light_4;
+SDL_Texture * explosion_light_5;
+SDL_Texture * explosion_shadow_0;
+SDL_Texture * explosion_shadow_1;
+SDL_Texture * explosion_shadow_2;
+SDL_Texture * explosion_shadow_3;
+SDL_Texture * explosion_shadow_4;
+SDL_Texture * explosion_shadow_5;
+SDL_Texture * lives;
+SDL_Texture * player_bullet_light;
+SDL_Texture * player_bullet_shadow;
+SDL_Texture * player_explosion_0;
+SDL_Texture * player_explosion_10;
+SDL_Texture * player_explosion_11;
+SDL_Texture * player_explosion_1;
+SDL_Texture * player_explosion_2;
+SDL_Texture * player_explosion_3;
+SDL_Texture * player_explosion_4;
+SDL_Texture * player_explosion_5;
+SDL_Texture * player_explosion_6;
+SDL_Texture * player_explosion_7;
+SDL_Texture * player_explosion_8;
+SDL_Texture * player_explosion_9;
+SDL_Texture * player_homing_bullet_light_0;
+SDL_Texture * player_homing_bullet_light_1;
+SDL_Texture * player_homing_bullet_light_2;
+SDL_Texture * player_homing_bullet_shadow_0;
+SDL_Texture * player_homing_bullet_shadow_1;
+SDL_Texture * player_homing_bullet_shadow_2;
+SDL_Texture * player_ship_invincible_light;
+SDL_Texture * player_ship_invincible_shadow;
+SDL_Texture * player_ship_light;
+SDL_Texture * player_ship_polarityswitch_0_light;
+SDL_Texture * player_ship_polarityswitch_0_shadow;
+SDL_Texture * player_ship_polarityswitch_1_light;
+SDL_Texture * player_ship_polarityswitch_1_shadow;
+SDL_Texture * player_ship_shadow;
+SDL_Texture * powerslot;
+SDL_Texture * prop_wall_left;
+SDL_Texture * prop_wall_right;

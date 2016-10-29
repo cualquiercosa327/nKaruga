@@ -31,6 +31,7 @@ Player::~Player()
 
 void Player::handle(KeyEvent kEv)
 {
+	int w, h;
 	static Rect r, temp;
 	
 	if(active)
@@ -64,11 +65,13 @@ void Player::handle(KeyEvent kEv)
 		if(KRIGHT(kEv)) x += itofix(2);
 		if(KUP(kEv)) y -= itofix(2);
 			
-		r.x = fixtoi(x) - (img[(isSwitchingPolarity / 8) * 2][0] / 2);
-		r.y = fixtoi(y) - (img[(isSwitchingPolarity / 8) * 2][1] / 2);
+		SDL_QueryTexture(img[(isSwitchingPolarity / 8) * 2], NULL, NULL, &w, &h);	
 			
-		temp.x = img[(isSwitchingPolarity / 8) * 2][0] / 2;
-		temp.y = img[(isSwitchingPolarity / 8) * 2][1] / 2;
+		r.x = fixtoi(x) - (w / 2);
+		r.y = fixtoi(y) - (h / 2);
+		
+		temp.x = w / 2;
+		temp.y = h / 2;
 			
 		x = r.x < G_minX ? itofix(G_minX + temp.x) : (r.x > G_maxX - (temp.x * 2) ? itofix(G_maxX - temp.x) : x);
 		y = r.y < 0 ? itofix(temp.y) : (r.y > 240 - (temp.y * 2) ? itofix(240 - temp.y) : y);
@@ -104,12 +107,13 @@ void Player::handle(KeyEvent kEv)
 				G_hasFiredOnce = true;
 				if(fireRepeat)
 				{
+					SDL_QueryTexture(img[0], NULL, NULL, &w, &h);
 					// fire 2 bullets if the key is being held
-					Level::bArray->add(x - itofix(img[0][0]) / 4, y, 192, itofix(6), image_LUT_player_bullet_light, polarity, false, CAMREL_NONE);
-					Level::bArray->add(x + itofix(img[0][0]) / 4, y, 192, itofix(6), image_LUT_player_bullet_light, polarity, false, CAMREL_NONE);
+					Level::bArray->add(x - itofix(w) / 4, y, 192, itofix(6), image_LUT_player_bullet_light, polarity, false, CAMREL_NONE);
+					Level::bArray->add(x + itofix(w) / 4, y, 192, itofix(6), image_LUT_player_bullet_light, polarity, false, CAMREL_NONE);
 					fireDelay = 4;
-					int x1 = x - itofix(img[0][0]) / 4;
-					int x2 = x + itofix(img[0][0]) / 4;
+					int x1 = x - itofix(w) / 4;
+					int x2 = x + itofix(w) / 4;
 					for(int i = 0; i < 8; i++)
 					{
 						G_particles->add(x1, y, 192 + (rand() % 32) - 16, itofix(2), polarity, 8);
