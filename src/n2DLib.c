@@ -80,8 +80,6 @@ void updateScreen()
 	SDL_LockTexture(MAIN_SCREEN, NULL, &pixels, &pitch);
 	memcpy(pixels,BUFF_BASE_ADDRESS,153600);
 	SDL_UnlockTexture(MAIN_SCREEN);
-	SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
-	SDL_RenderClear(sdlRenderer);
 	SDL_RenderCopy(sdlRenderer, MAIN_SCREEN, NULL, NULL);
 	SDL_RenderPresent(sdlRenderer);
 	updateKeys();
