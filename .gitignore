@@ -21,3 +21,5 @@ buildscript/final
 release
 release/*.deb
 release/*.zip
+opk/sfx
+opk/*.elf
