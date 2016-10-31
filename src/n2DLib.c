@@ -332,7 +332,20 @@ void drawSpritePart(SDL_Texture* src, int _x, int _y, const Rect* part, int flas
 	position.y = part->y;
 	position.w = part->w;
 	position.h = part->h;
+	if (flash) 
+	{
+		/*SDL_SetRenderDrawBlendMode(sdlRenderer, SDL_BLENDMODE_ADD);
+		SDL_SetTextureBlendMode(src, SDL_BLENDMODE_ADD);
+		SDL_SetTextureColorMod(src, RGBA8_GET_R(flashColor), RGBA8_GET_G(flashColor), RGBA8_GET_B(flashColor));*/
+		SDL_SetTextureColorMod(src, RGBA8_GET_R(flashColor)-128, RGBA8_GET_G(flashColor)-128, RGBA8_GET_B(flashColor)-128);
+	}
 	SDL_RenderCopy(sdlRenderer, src, &frame, &position);
+	if (flash) 
+	{
+		/*SDL_SetRenderDrawBlendMode(sdlRenderer, SDL_BLENDMODE_NONE);
+		SDL_SetTextureBlendMode(src, SDL_BLENDMODE_NONE);*/
+		SDL_SetTextureColorMod(src, 255, 255, 255);
+	}
 }
 
 void drawSpriteScaled(SDL_Texture* source, const Rect* info, int flash, unsigned short flashColor)
@@ -350,8 +363,8 @@ void drawSpriteRotated(SDL_Texture* source, const Rect* sr, const Rect* rc, Fixe
 	position.w = w;
 	position.h = h;
 	
-	double result_angle;
-	result_angle = -((double)angle*0.705882352941f);
+	float result_angle;
+	result_angle = -angle;
 	
 	SDL_Point center;
 	center.x = (w/2);
