@@ -3,8 +3,8 @@ CXX = g++
 LD = g++
 CFLAGS = -O0 -g `sdl2-config --cflags` -DHOMEDIR
 CXXFLAGS = $(CFLAGS) -std=c++11 -fno-exceptions -fno-rtti 
-LDFLAGS = -lSDL2 -lSDL2_mixer -lSDL2_image -lstdc++
-LDFLAGS += -lm -Wl,--as-needed,--gc-sections -flto -s
+LDFLAGS = -lSDL2 -lSDL2_mixer -lSDL2_image -lstdc++ -lSDL2_ttf
+LDFLAGS += -lm -Wl,--as-needed,--gc-sections -flto
 EXE = nKaruga
 DIRECTORIES = ./src
 OBJS = $(patsubst %.c, %.o, $(shell find $(DIRECTORIES) -name \*.c))

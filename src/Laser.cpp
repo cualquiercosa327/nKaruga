@@ -14,13 +14,13 @@ Laser::~Laser()
 void Laser::activate(Enemy *e, bool _p, Fixed _a)
 {
 	int w, h;
-	SDL_QueryTexture(origin->img, NULL, NULL, &w, &h);
 	origin = e;
 	active = true;
 	polarity = _p;
 	amplitude = 0;
 	angleOffset = _a;
 	angle = -origin->getRotation() + angleOffset;
+	SDL_QueryTexture(origin->img, NULL, NULL, &w, &h);
 	x = fixtoi(origin->getx()) + fixtoi(fixcos(angle) * w / 2);
 	y = fixtoi(origin->gety()) + fixtoi(fixsin(angle) * h / 2);
 	G_particles->pulse(itofix(x), itofix(y), polarity);
@@ -29,8 +29,8 @@ void Laser::activate(Enemy *e, bool _p, Fixed _a)
 void Laser::handle()
 {
 	int w, h;
-	SDL_QueryTexture(origin->img, NULL, NULL, &w, &h);
 	angle = -origin->getRotation() + angleOffset;
+	SDL_QueryTexture(origin->img, NULL, NULL, &w, &h);
 	x = fixtoi(origin->getx()) + fixtoi(fixcos(angle) * w / 2);
 	y = fixtoi(origin->gety()) + fixtoi(fixsin(angle) * h / 2);
 	amplitude += (amplitude < 320) * LASER_SPEED;

@@ -42,22 +42,29 @@ BackgroundScroller::~BackgroundScroller()
 
 void BackgroundScroller::draw()
 {
-	/*Fixed sourceX = -((x + fixmul(dx, scrollScale)) % itofix(w)) + itofix(w),
-		sourceY = -((y + fixmul(dy, scrollScale)) % itofix(h)) + itofix(h);
+	Fixed sourceX = -((x + fixmul(dx, scrollScale)) % itofix(w)) + itofix(w),
+	sourceY = -((y + fixmul(dy, scrollScale)) % itofix(h)) + itofix(h);
 	sourceX %= itofix(w);
 	sourceY %= itofix(h);
 	Fixed originX = sourceX;
+	int y_scroll;
 	
-	for(int sy = 0; sy < 240; sy++, sourceY = (sourceY + displayScale) % itofix(h))
+	/* Do not scroll the background */
+	y_scroll = 0;
+	if (h < 239)
 	{
-		sourceX = originX;
-		for(int sx = 0, sourceX = originX; sx < 320; sx++, sourceX = (sourceX + displayScale) % itofix(w))
-		{
-			unsigned short c = img[fixtoi(sourceY) * w + fixtoi(sourceX)];
-			if (c != colorKey)
-				setPixelUnsafe(sx, sy, c);
-		}
-	}*/
+		y_scroll = -(sourceY/240);
+		drawSprite(img, 0, y_scroll, 0, 0);
+		drawSprite(img, 0, y_scroll+60, 0, 0);
+		drawSprite(img, 0, y_scroll+120, 0, 0);
+		drawSprite(img, 0, y_scroll+180, 0, 0);
+		drawSprite(img, 0, y_scroll+240, 0, 0);
+	}
+	else
+	{
+		drawSprite(img, 0, y_scroll, 0, 0);
+		drawSprite(img, 0, y_scroll+240, 0, 0);	
+	}
 }
 
 void BackgroundScroller::update()

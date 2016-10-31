@@ -1,9 +1,12 @@
 #include "n2DLib.h"
 #include "n2DLib_font.h"
+#include <SDL_ttf.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+int record;
 
 /*             *
  *  Buffering  *
@@ -12,19 +15,25 @@ extern "C" {
 #define min(X,Y) (((X) < (Y)) ? (X) : (Y))
 #define max(X,Y) (((X) > (Y)) ? (X) : (Y))
 
-#define RGBA8(r, g, b, a)  ((((a)&0xFF)<<24) | (((b)&0xFF)<<16) | (((g)&0xFF)<<8) | (((r)&0xFF)<<0))
-#define RGBA8_GET_R(c)   (((c) >> 0) & 0xFF)
-#define RGBA8_GET_G(c)   (((c) >> 8) & 0xFF)
-#define RGBA8_GET_B(c)   (((c) >> 16) & 0xFF)
-#define RGBA8_GET_A(c)   (((c) >> 24) & 0xFF)
+#define RGBA8_GET_R(c)   (((c) >> 11) & 0xFF)*8
+#define RGBA8_GET_G(c)   (((c) >> 5) & 0xFF)*8
+#define RGBA8_GET_B(c)   (((c)) & 0xFF)*8
+#define RGBA8_GET_A(c)   255
+
+
+struct str_struct
+{
+	int x;
+	int y;
+};
 
 unsigned short BUFF_BASE_ADDRESS[76800];
 SDL_Window *sdlWindow;
 SDL_Renderer *sdlRenderer;
+SDL_Texture* font_texture;
 
 Uint32 baseFPS;
-
-//#define DISP_RATIO 2
+void Load_Font();
 
 void initBuffering()
 {
@@ -49,6 +58,8 @@ void initBuffering()
 	baseFPS = SDL_GetTicks();
 	SDL_PumpEvents();
 	G_keys = SDL_GetKeyboardState(NULL);
+	
+	Load_Font();
 }
 
 void constrainFrameRate(int fps)
@@ -223,39 +234,36 @@ void clearBufferW()
 
 void clearBuffer(unsigned short c)
 {
-	SDL_SetRenderDrawColor(sdlRenderer,0, 0, 0, 255);
+	SDL_SetRenderDrawColor(sdlRenderer, RGBA8_GET_R(c), RGBA8_GET_G(c), RGBA8_GET_B(c), 255);
 	SDL_RenderClear(sdlRenderer);
 }
 
 inline unsigned short getPixelUnsafe(const unsigned short* src, unsigned int x, unsigned int y)
 {
-	/*return src[x + y * src[0] + 3];*/
+	return 0;
 }
 
 unsigned short getPixel(const unsigned short* src, unsigned int x, unsigned int y)
 {
-	/*if(x < src[0] && y < src[1])
-		return src[x + y * src[0] + 3];
-	else
-		return src[2];*/
+	return 0;
 }
 
 inline void setPixelUnsafe(unsigned int x, unsigned int y, unsigned short c)
 {
-	SDL_SetRenderDrawColor(sdlRenderer, RGBA8_GET_R(c), RGBA8_GET_G(c), RGBA8_GET_B(c), RGBA8_GET_A(c));
-	SDL_RenderDrawPoint (sdlRenderer, 0, 0);
+	SDL_SetRenderDrawColor(sdlRenderer, RGBA8_GET_R(c), RGBA8_GET_G(c), RGBA8_GET_B(c), 255);
+	SDL_RenderDrawPoint (sdlRenderer, x, y);
 }
 
 void setPixel(unsigned int x, unsigned int y, unsigned short c)
 {
-	SDL_SetRenderDrawColor(sdlRenderer, RGBA8_GET_R(c), RGBA8_GET_G(c), RGBA8_GET_B(c), RGBA8_GET_A(c));
-	SDL_RenderDrawPoint (sdlRenderer, 0, 0);
+	SDL_SetRenderDrawColor(sdlRenderer, RGBA8_GET_R(c), RGBA8_GET_G(c), RGBA8_GET_B(c), 255);
+	SDL_RenderDrawPoint (sdlRenderer, x, y);
 }
 
- void setPixelRGB(unsigned int x, unsigned int y, unsigned char r, unsigned char g, unsigned char b)
+void setPixelRGB(unsigned int x, unsigned int y, unsigned char r, unsigned char g, unsigned char b)
 {
 	SDL_SetRenderDrawColor(sdlRenderer, r, g, b, 255);
-	SDL_RenderDrawPoint (sdlRenderer, 0, 0);
+	SDL_RenderDrawPoint (sdlRenderer, x, y);
 }
 
 void drawHLine(int y, int x1, int x2, unsigned short c)
@@ -266,35 +274,20 @@ void drawHLine(int y, int x1, int x2, unsigned short c)
 
 void drawVLine(int x, int y1, int y2, unsigned short c)
 {
-	/*unsigned int _y1, _y2;
-	if((y1 & y2) >> 31 || y1 + y2 >= 480 || (unsigned)x > 319)
-	{
-		return;
-	}
-	
-	if(y1 < y2)
-	{
-		_y1 = max(y1, 0);
-		_y2 = min(y2, 239);
-	}
-	else
-	{
-		_y1 = max(y2, 0);
-		_y2 = min(y1, 239);
-	}
-	for(; _y1 <= _y2; _y1++)
-		setPixelUnsafe(x, _y1, c);*/
+	SDL_SetRenderDrawColor(sdlRenderer, RGBA8_GET_R(c), RGBA8_GET_G(c), RGBA8_GET_B(c), RGBA8_GET_A(c));
+	SDL_RenderDrawLine(sdlRenderer, x, y1, x, y2);
 }
 
 void fillRect(int x, int y, int w, int h, unsigned short c)
 {
-	/*unsigned int _x = max(x, 0), _y = max(y, 0), _w = min(320 - _x, w - _x + x), _h = min(240 - _y, h - _y + y), i, j;
-	if(_x < 320 && _y < 240)
-	{
-		for(j = _y; j < _y + _h; j++)
-			for(i = _x; i < _x + _w; i++)
-				setPixelUnsafe(i, j, c);
-	}*/
+	SDL_Rect r;
+    r.x = x;
+    r.y = y;
+    r.w = w;
+    r.h = h;
+	
+	SDL_SetRenderDrawColor( sdlRenderer, RGBA8_GET_R(c), RGBA8_GET_G(c), RGBA8_GET_B(c), 255);
+	SDL_RenderFillRect( sdlRenderer, &r );
 }
 
 void drawSprite(SDL_Texture *src, int _x, int _y, int flash, unsigned short flashColor)
@@ -307,91 +300,64 @@ void drawSprite(SDL_Texture *src, int _x, int _y, int flash, unsigned short flas
 	position.y = _y;
 	position.w = w;
 	position.h = h;
+
+	if (flash) 
+	{
+		/*SDL_SetRenderDrawBlendMode(sdlRenderer, SDL_BLENDMODE_ADD);
+		SDL_SetTextureBlendMode(src, SDL_BLENDMODE_ADD);
+		SDL_SetTextureColorMod(src, RGBA8_GET_R(flashColor), RGBA8_GET_G(flashColor), RGBA8_GET_B(flashColor));*/
+		SDL_SetTextureColorMod(src, RGBA8_GET_R(flashColor)-128, RGBA8_GET_G(flashColor)-128, RGBA8_GET_B(flashColor)-128);
+	}
 	SDL_RenderCopy(sdlRenderer, src, NULL, &position);
+	if (flash) 
+	{
+		/*SDL_SetRenderDrawBlendMode(sdlRenderer, SDL_BLENDMODE_NONE);
+		SDL_SetTextureBlendMode(src, SDL_BLENDMODE_NONE);*/
+		SDL_SetTextureColorMod(src, 255, 255, 255);
+	}
 }
 
 void drawSpritePart(SDL_Texture* src, int _x, int _y, const Rect* part, int flash, unsigned short flashColor)
 {
-	/*unsigned short c;
-	int x, y, w = part->w + _x, h = part->h + _y, z = part->x, t = part->y;
-	for(y = _y; y < h; y++, t++)
-	{
-		for(x = _x, z = part->x; x < w; x++, z++)
-		{
-			c = getPixel(src, z, t);
-			if(c != src[2])
-				setPixel(x, y, flash ? flashColor : c);
-			if(x > 319) break;
-		}
-		if(y > 239) break;
-	}*/
+	unsigned int w, h;
+	SDL_QueryTexture(src, NULL, NULL, &w, &h);
+
+	SDL_Rect position;
+	position.x = _x;
+	position.y = _y;
+	position.w = part->w;
+	position.h = part->h;
+	SDL_Rect frame;
+	position.x = part->x;
+	position.y = part->y;
+	position.w = part->w;
+	position.h = part->h;
+	SDL_RenderCopy(sdlRenderer, src, &frame, &position);
 }
 
 void drawSpriteScaled(SDL_Texture* source, const Rect* info, int flash, unsigned short flashColor)
 {
-	/*Fixed dx = itofix(source[0]) / info->w;
-	Fixed dy = itofix(source[1]) / info->h;
-	int x, y, _x = info->x + info->w / 2, _y = info->y + info->h / 2;
-	Fixed tx = 0, ty = 0;
-	unsigned short c;
-	
-	for(y = info->y - info->h / 2; y < _y; y++, ty += dy)
-	{
-		for(x = info->x - info->w / 2, tx = 0; x < _x; x++, tx += dx)
-		{
-			c = getPixel(source, fixtoi(tx), fixtoi(ty));
-			if(c != source[2])
-				setPixel(x, y, flash ? flashColor : c);
-			if(x > 319) break;
-		}
-		if(y > 239) break;
-	}*/
 }
 
 void drawSpriteRotated(SDL_Texture* source, const Rect* sr, const Rect* rc, Fixed angle, int flash, unsigned short flashColor)
 {
-	printf("Angle %d\n", angle);
-	/*Rect defaultRect = { source[0] / 2, source[1] / 2, 0, 0 };
-	Rect fr;
-	unsigned short currentPixel;
-	Fixed dX = fixcos(angle), dY = fixsin(angle);
+	unsigned int w, h;
+	SDL_QueryTexture(source, NULL, NULL, &w, &h);
+
+	SDL_Rect position;
+	position.x = sr->x-(w/2);
+	position.y = sr->y-(h/2);
+	position.w = w;
+	position.h = h;
 	
-	if(rc == NULL)
-		rc = &defaultRect;
+	double result_angle;
+	result_angle = -((double)angle*0.705882352941f);
 	
-	getBoundingBox(-rc->x, -rc->y, source[0], source[1], 0, 0, angle, &fr);
-	fr.x += sr->x;
-	fr.y += sr->y;
-	fr.w += fr.x;
-	fr.h += fr.y;
-	
-	Rect cp, lsp, cdrp;
-	
-	// Feed fixed-point to get fixed-point
-	rotate(itofix(fr.x - sr->x), itofix(fr.y - sr->y), 0, 0, -angle, &lsp);
-	
-	for(cp.y = fr.y; cp.y <= fr.h; cp.y++)
-	{
-		cdrp.x = lsp.x;
-		cdrp.y = lsp.y;
-		
-		for(cp.x = fr.x; cp.x <= fr.w; cp.x++)
-		{
-			if(cp.x >= 0 && cp.x < 320 && cp.y >= 0 && cp.y < 240)
-			{
-				currentPixel = getPixel(source, fixtoi(cdrp.x) + rc->x, fixtoi(cdrp.y) + rc->y);
-				if(currentPixel != source[2])
-				{
-					setPixelUnsafe(cp.x, cp.y, flash ? flashColor : currentPixel);
-				}
-			}
-			cdrp.x += dX;
-			cdrp.y += dY;
-		}
-		
-		lsp.x -= dY;
-		lsp.y += dX;
-	}*/
+	SDL_Point center;
+	center.x = (w/2);
+	center.y = (h/2);
+
+	SDL_RenderCopyEx(sdlRenderer, source, NULL, &position, result_angle, &center, SDL_FLIP_NONE);
 }
 
 /*            *
@@ -400,28 +366,8 @@ void drawSpriteRotated(SDL_Texture* source, const Rect* sr, const Rect* rc, Fixe
  
 void drawLine(int x1, int y1, int x2, int y2, unsigned short c)
 {
-	int dx = abs(x2-x1);
-	int dy = abs(y2-y1);
-	int sx = (x1 < x2)?1:-1;
-	int sy = (y1 < y2)?1:-1;
-	int err = dx-dy;
-	int e2;
-
-	while (!(x1 == x2 && y1 == y2))
-	{
-		setPixel(x1,y1,c);
-		e2 = 2*err;
-		if (e2 > -dy)
-		{		 
-			err = err - dy;
-			x1 = x1 + sx;
-		}
-		if (e2 < dx)
-		{		 
-			err = err + dx;
-			y1 = y1 + sy;
-		}
-	}
+	SDL_SetRenderDrawColor(sdlRenderer, RGBA8_GET_R(c), RGBA8_GET_G(c), RGBA8_GET_B(c), RGBA8_GET_A(c));
+	SDL_RenderDrawLine(sdlRenderer, x1, y1, x2, y2);
 }
 
 void drawPolygon(unsigned short c, int pointsNb, ...)
@@ -477,130 +423,73 @@ void fillEllipse(int x, int y, int w, int h, unsigned short c)
  *  Text  *
  *        */
 
-int isOutlinePixel(unsigned char* charfont, int x, int y)
+struct str_struct drawChar(int x, int y, int margin, char ch, unsigned short fc, unsigned short olc)
 {
-	int xis0 = !x, xis7 = x == 7, yis0 = !y, yis7 = y == 7;
+	struct str_struct true_str;
+	true_str.x = x;
+	true_str.y = y;
 	
-	if(xis0)
+	char str[1];
+	if (ch > 96 && ch < 122)
 	{
-		if(yis0)
-		{
-			return !(*charfont & 0x80) && ((*charfont & 0x40) || (charfont[1] & 0x80) || (charfont[1] & 0x40));
-		}
-		else if(yis7)
-		{
-			return !(charfont[7] & 0x80) && ((charfont[7] & 0x40) || (charfont[6] & 0x80) || (charfont[6] & 0x40));
-		}
-		else
-		{
-			return !(charfont[y] & 0x80) && (
-				(charfont[y - 1] & 0x80) || (charfont[y - 1] & 0x40) ||
-				(charfont[y] & 0x40) ||
-				(charfont[y + 1] & 0x80) || (charfont[y + 1] & 0x40));
-		}
-	}
-	else if(xis7)
-	{
-		if(yis0)
-		{
-			return !(*charfont & 0x01) && ((*charfont & 0x02) || (charfont[1] & 0x01) || (charfont[1] & 0x02));
-		}
-		else if(yis7)
-		{
-			return !(charfont[7] & 0x01) && ((charfont[7] & 0x02) || (charfont[6] & 0x01) || (charfont[6] & 0x02));
-		}
-		else
-		{
-			return !(charfont[y] & 0x01) && (
-				(charfont[y - 1] & 0x01) || (charfont[y - 1] & 0x02) ||
-				(charfont[y] & 0x02) ||
-				(charfont[y + 1] & 0x01) || (charfont[y + 1] & 0x02));
-		}
+		str[0] = ch - 32;
 	}
 	else
 	{
-		char b = 1 << (7 - x);
-		if(yis0)
-		{
-			return !(*charfont & b) && (
-				(*charfont & (b << 1)) || (*charfont & (b >> 1)) ||
-				(charfont[1] & (b << 1)) || (charfont[1] & b) || (charfont[1] & (b >> 1)));
-		}
-		else if(yis7)
-		{
-			return !(charfont[7] & b) && (
-				(charfont[7] & (b << 1)) || (charfont[7] & (b >> 1)) ||
-				(charfont[6] & (b << 1)) || (charfont[6] & b) || (charfont[6] & (b >> 1)));
-		}
-		else
-		{
-			return !(charfont[y] & b) && (
-				(charfont[y] & (b << 1)) || (charfont[y] & (b >> 1)) ||
-				(charfont[y - 1] & (b << 1)) || (charfont[y - 1] & b) || (charfont[y - 1] & (b >> 1)) ||
-				(charfont[y + 1] & (b << 1)) || (charfont[y + 1] & b) || (charfont[y + 1] & (b >> 1)));
-		}
+		str[0] = ch;
 	}
-}
-
-void drawChar(int *x, int *y, int margin, char ch, unsigned short fc, unsigned short olc)
-{
-	int i, j;
-	unsigned char *charSprite;
+		
 	if(ch == '\n')
 	{
-		*x = margin;
-		*y += 8;
+		true_str.x = margin;
+		true_str.y += 8;
 	}
-	else if(*y < 239)
+	else if (y < 239)
 	{
-		charSprite = ch * 8 + n2DLib_font;
-		// Draw charSprite as monochrome 8*8 image using given color
-		for(i = 0; i < 8; i++)
-		{
-			for(j = 7; j >= 0; j--)
-			{
-				if((charSprite[i] >> j) & 1)
-					setPixel(*x + (7 - j), *y + i, fc);
-				else if(isOutlinePixel(charSprite, 7 - j, i))
-					setPixel(*x + (7 - j), *y + i, olc);
-			}
-		}
-		*x += 8;
+		int w, h;
+		SDL_QueryTexture(font_texture, NULL, NULL, &w, &h);
+		SDL_Rect position;
+		position.x = true_str.x;
+		position.y = true_str.y;
+		position.w = 8;
+		position.h = 8;
+		SDL_Rect frame;
+		frame.x = (str[0]-33)*8;
+		frame.y = 0;
+		frame.w = 8;
+		frame.h = 8;
+		SDL_RenderCopy(sdlRenderer, font_texture, &frame, &position);
+		true_str.x += 8;
 	}
+	
+	return true_str;
 }
 
-void drawString(int *x, int *y, int _x, const char *str, unsigned short fc, unsigned short olc)
+void drawString(int* x, int* y, int _x, const char *str, unsigned short fc, unsigned short olc)
 {
+	struct str_struct true_str;
+	
+	true_str.x = *x;
+	true_str.y = *y;
+	
 	int i, max = strlen(str);
 	for(i = 0; i < max; i++)
-		drawChar(x, y, _x, str[i], fc, olc);
-}
-
-void drawDecimal(int *x, int *y, int n, unsigned short fc, unsigned short olc)
-{
-	// Ints are in [-2147483648, 2147483647]
-	//               |        |
-	int divisor =    1000000000, num, numHasStarted = 0;
+	{
+		true_str = drawChar(true_str.x, true_str.y, _x, str[i], fc, olc);
+	}
 	
-	if(n < 0)
-	{
-		drawChar(x, y, 0, '-', fc, olc);
-		n = -n;
-	}
-	while(divisor != 0)
-	{
-		num = n / divisor;
-		if(divisor == 1 || num != 0 || numHasStarted)
-		{
-			numHasStarted = 1;
-			drawChar(x, y, 0, num + '0', fc, olc);
-		}
-		n %= divisor;
-		divisor /= 10;
-	}
+	*x = true_str.x;
+	*y = true_str.y;
 }
 
-void drawStringF(int *x, int *y, int _x, unsigned short fc, unsigned short olc, const char *s, ...)
+void drawDecimal(int* x, int* y, int n, unsigned short fc, unsigned short olc)
+{
+	char str[6];
+	sprintf(str, "%d", n);
+	drawString(x, y, 0, str, 0, 0);
+}
+
+void drawStringF(int* x, int* y, int _x, unsigned short fc, unsigned short olc, const char *s, ...)
 {
 	va_list specialArgs;
 	char str[1200] = { 0 };
@@ -699,6 +588,12 @@ SDL_Texture* Load_Image(const char* directory)
 
 	return tmp2;
 }
+
+void Load_Font()
+{
+	font_texture = Load_Image("./gfx/font.png");
+}
+
 
 
 #ifdef __cplusplus

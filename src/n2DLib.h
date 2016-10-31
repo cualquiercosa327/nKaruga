@@ -80,7 +80,7 @@ extern void fillCircle(int, int, int, unsigned short);
 extern void fillEllipse(int, int, int, int, unsigned short);
 extern void drawString(int*, int*, int, const char*, unsigned short, unsigned short);
 extern void drawDecimal(int*, int*, int, unsigned short, unsigned short);
-extern void drawChar(int*, int*, int, char, unsigned short, unsigned short);
+//extern void drawChar(int, int, int, char, unsigned short, unsigned short);
 extern void drawStringF(int*, int*, int, unsigned short, unsigned short, const char*, ...);
 extern int numberWidth(int);
 extern int stringWidth(const char*);
@@ -92,8 +92,6 @@ extern unsigned short * loadBMP(const char*, unsigned short);
 
 #define BUFF_BYTES_SIZE (320*240*2)
 extern unsigned short BUFF_BASE_ADDRESS[320 * 240];
-extern SDL_Texture *MAIN_SCREEN;
-
 extern SDL_Texture* Load_Image(const char* directory);
 
 // Global key state

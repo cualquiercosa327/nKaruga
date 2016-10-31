@@ -484,7 +484,8 @@ void playGame()
 		
 		statsRect.x = w + 2;
 		statsRect.y = 226;
-		drawChar(&statsRect.x, &statsRect.y, 0, 'x', 0xffff, 0);
+		drawString(&statsRect.x, &statsRect.y, 0, "x", 0xffff, 0);
+		//drawChar(statsRect.x, statsRect.y, 0, 'x', 0xffff, 0);
 		drawDecimal(&statsRect.x, &statsRect.y, max(0, Level::p->getLives() - 1), 0xffff, 0);
 
 		// Overwrite all of that
