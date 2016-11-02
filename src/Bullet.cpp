@@ -42,11 +42,11 @@ bool Bullet::hurtsPlayer()
 bool Bullet::handle()
 {
 	int w, h;
-	SDL_QueryTexture(img, NULL, NULL, &w, &h);
 	x += dx;
 	y += dy;
 				
 	// Bullets have a threshold of 5
+	Get_Size_Image(img, NULL, NULL, &w, &h);
 	return getx() + itofix(w / 2) < itofix(-5) || getx() - itofix(w / 2) > itofix(324) || gety() + itofix(h / 2) < itofix(-5) || gety() - itofix(h / 2) > itofix(244);
 }
 

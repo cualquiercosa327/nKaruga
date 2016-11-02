@@ -65,7 +65,7 @@ void Player::handle(KeyEvent kEv)
 		if(KRIGHT(kEv)) x += itofix(2);
 		if(KUP(kEv)) y -= itofix(2);
 			
-		SDL_QueryTexture(img[(isSwitchingPolarity / 8) * 2], NULL, NULL, &w, &h);	
+		Get_Size_Image(img[(isSwitchingPolarity / 8) * 2], NULL, NULL, &w, &h);	
 			
 		r.x = fixtoi(x) - (w / 2);
 		r.y = fixtoi(y) - (h / 2);
@@ -107,7 +107,7 @@ void Player::handle(KeyEvent kEv)
 				G_hasFiredOnce = true;
 				if(fireRepeat)
 				{
-					SDL_QueryTexture(img[0], NULL, NULL, &w, &h);
+					Get_Size_Image(img[0], NULL, NULL, &w, &h);
 					// fire 2 bullets if the key is being held
 					Level::bArray->add(x - itofix(w) / 4, y, 192, itofix(6), image_LUT_player_bullet_light, polarity, false, CAMREL_NONE);
 					Level::bArray->add(x + itofix(w) / 4, y, 192, itofix(6), image_LUT_player_bullet_light, polarity, false, CAMREL_NONE);

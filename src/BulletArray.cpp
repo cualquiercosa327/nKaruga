@@ -32,7 +32,7 @@ void BulletArray::handle()
 				// Check collisions with player if he's not dead already
 				if(cb->getPolarity() != Level::p->getPolarity())
 				{
-					SDL_QueryTexture(cb->img, NULL, NULL, &w, &h);
+					Get_Size_Image(cb->img, NULL, NULL, &w, &h);
 					// the player has a 1px hitbox (for now) (but that actually seems to Level::be enough)
 					if(Level::p->getx() >= cb->getx() - itofix(w / 2) && Level::p->getx() < cb->getx() + itofix(w / 2)
 					&& Level::p->gety() >= cb->gety() - itofix(h / 2) && Level::p->gety() < cb->gety() + itofix(h / 2))
@@ -135,7 +135,7 @@ void BulletArray::handle()
 				}
 				else
 				{
-					SDL_QueryTexture(Level::p->img[0], NULL, NULL, &w, &h);
+					Get_Size_Image(Level::p->img[0], NULL, NULL, &w, &h);
 					if(sq(fixtoi(cf->getx() - Level::p->getx())) + sq(fixtoi(cf->gety() - Level::p->gety())) < sq(w / 2))
 					{
 						destroyBullet = true;
@@ -155,7 +155,7 @@ void BulletArray::handle()
 						Enemy *ce = &Level::enemiesArray->data[i];
 						if(ce->isActive() && (ce->isDamageable() || !ce->isProp()))
 						{
-							SDL_QueryTexture(ce->img, NULL, NULL, &w, &h);
+							Get_Size_Image(ce->img, NULL, NULL, &w, &h);
 							if(cf->getx() - itofix(4) <= fToScreenX(ce->getx(), ce->getCamRel()) + itofix(w / 2) &&
 							cf->getx() + itofix(4) >= fToScreenX(ce->getx(), ce->getCamRel()) - itofix(w / 2) &&
 							cf->gety() - itofix(4) <= fToScreenY(ce->gety(), ce->getCamRel()) + itofix(h / 2) &&
@@ -220,7 +220,7 @@ void BulletArray::handle()
 				}
 				else
 				{
-					SDL_QueryTexture(Level::p->img[0], NULL, NULL, &w, &h);
+					Get_Size_Image(Level::p->img[0], NULL, NULL, &w, &h);
 					if(sq(fixtoi(ch->getx() - Level::p->getx())) + sq(fixtoi(ch->gety() - Level::p->gety())) < sq(w / 2))
 					{
 						destroyBullet = true;
@@ -284,7 +284,7 @@ void BulletArray::handle()
 							else
 							{
 								int w, h;
-								SDL_QueryTexture(Level::p->img[0], NULL, NULL, &w, &h);
+								Get_Size_Image(Level::p->img[0], NULL, NULL, &w, &h);
 								int temp1 = a * (fixtoi(Level::p->getx()) - w / 2) + b * fixtoi(Level::p->gety());
 								int temp2 = a * (fixtoi(Level::p->getx()) + w / 2) + b * fixtoi(Level::p->gety());
 							

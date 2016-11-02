@@ -148,8 +148,9 @@ int getPatternID(BossEnemy *be)
 Rect getJointPoint(BossEnemy *be, int data[][4], int offset)
 {
 	int w, h;
-	SDL_QueryTexture(bossImage_entries[be->body], NULL, NULL, &w, &h);
 	Rect result;
+	Get_Size_Image(bossImage_entries[be->body], NULL, NULL, &w, &h);
+	
 	result.x = fixtoi(be->getx()) - w / 2 + data[offset][2];
 	result.y = fixtoi(be->gety()) - h / 2 + data[offset][3];
 	result.w = data[offset][0];
@@ -162,15 +163,15 @@ Rect getJointPoint(BossEnemy *be, int data[][4], int offset)
 Rect getFullJointedPos(Entity *base, int bimgID, int imgID, int data[][4], int offset)
 {
 	Rect result;
-	SDL_Texture *bimg = bossImage_entries[bimgID], *img = bossImage_entries[imgID];
+	Texture_nKaruga *bimg = bossImage_entries[bimgID], *img = bossImage_entries[imgID];
 	int w, h;
-	SDL_QueryTexture(bimg, NULL, NULL, &w, &h);
+	Get_Size_Image(bossImage_entries[bimgID], NULL, NULL, &w, &h);
 	result.x = fixtoi(base->getx()) + data[offset][2] -w / 2; // calculate the base point first ; the joint point must be right on it on-screen
-	SDL_QueryTexture(img, NULL, NULL, &w, &h);
+	Get_Size_Image(bossImage_entries[imgID], NULL, NULL, &w, &h);
 	result.x += data[offset][0] - w / 2; // superpose the joint point with the base point
-	SDL_QueryTexture(bimg, NULL, NULL, &w, &h);
+	Get_Size_Image(bossImage_entries[bimgID], NULL, NULL, &w, &h);
 	result.y = fixtoi(base->gety()) + data[offset][3] - h / 2;
-	SDL_QueryTexture(img, NULL, NULL, &w, &h);
+	Get_Size_Image(bossImage_entries[imgID], NULL, NULL, &w, &h);
 	result.y -= data[offset][1] - h / 2;
 	return result;
 }
@@ -261,7 +262,7 @@ void boss2_display(BossEnemy *be)
 void boss1_icb1(BossEnemy *be)
 {
 	int w, h;
-	SDL_QueryTexture(bossImage_entries[bossImage_LUT_1_body], NULL, NULL, &w, &h);
+	Get_Size_Image(bossImage_entries[bossImage_LUT_1_body], NULL, NULL, &w, &h);
 	//const int h = bossImage_entries[bossImage_LUT_1_body][1];
 	if(!be->initCallbackCalled)
 	{
@@ -321,7 +322,7 @@ void boss1_icb1(BossEnemy *be)
 void boss1_icb2(BossEnemy *be)
 {
 	int w, h;
-	SDL_QueryTexture(bossImage_entries[bossImage_LUT_1_body], NULL, NULL, &w, &h);
+	Get_Size_Image(bossImage_entries[bossImage_LUT_1_body], NULL, NULL, &w, &h);
 	//const int h = bossImage_entries[bossImage_LUT_1_body][1];
 	static Fixed dx = 0, dy = 0;
 	Rect pos, centerRot;
@@ -399,7 +400,7 @@ void boss2_icb(BossEnemy *be)
 	
 	//int w = bossImage_entries[bossImage_LUT_2_body][0], h = bossImage_entries[bossImage_LUT_2_body][1];
 	int w, h;
-	SDL_QueryTexture(bossImage_entries[bossImage_LUT_2_body], NULL, NULL, &w, &h);
+	Get_Size_Image(bossImage_entries[bossImage_LUT_2_body], NULL, NULL, &w, &h);
 	
 	if (!be->initCallbackCalled)
 	{
@@ -568,7 +569,7 @@ void boss1_cb(BossEnemy *be)
 		if(!(timer % 8))
 		{
 			int w, h;
-			SDL_QueryTexture(bossImage_entries[bossImage_LUT_1_leftarm_armed], NULL, NULL, &w, &h);
+			Get_Size_Image(bossImage_entries[bossImage_LUT_1_leftarm_armed], NULL, NULL, &w, &h);
 			rotate(pos.x, pos.y + h, pos.x, pos.y, be->angle, &pos);
 			if(timer & 8)
 			{
@@ -591,7 +592,7 @@ void boss1_cb(BossEnemy *be)
 	// Pattern 2
 	else if(be->currentPattern == 1)
 	{
-		SDL_Texture *img = bossImage_entries[bossImage_LUT_1_rightarm_armed2];
+		Texture_nKaruga *img = bossImage_entries[bossImage_LUT_1_rightarm_armed2];
 		// Display things the exact same way as in pattern 1
 		be->setx(be->getx() - fixcos(be->getInternal(0) / 2) / 2);
 		be->angle = fixmul(12, fixsin(be->getInternal(0) / 2));
@@ -616,7 +617,7 @@ void boss1_cb(BossEnemy *be)
 			static int bulletFired[3] = { 2, 2, 0 };
 			static bool canFire[3] = { false, true, true };
 			int w, h;
-			SDL_QueryTexture(img, NULL, NULL, &w, &h);
+			Get_Size_Image(img, NULL, NULL, &w, &h);
 			rotate(pos.x + w / 2 - pos.w, pos.y + h / 2 - pos.h , pos.x, pos.y, be->angle, &pos);
 			for(int j = 0; j < 3; j++)
 			{
@@ -708,7 +709,7 @@ void boss2_cb(BossEnemy *be)
 	// [30] : pattern timer
 	// [31] : pattern stage indicator
 	
-	SDL_QueryTexture(bossImage_entries[be->body], NULL, NULL, &w, &h);
+	Get_Size_Image(bossImage_entries[be->body], NULL, NULL, &w, &h);
 	be->setx(itofix(160) + fixsin(be->getInternal(29) / 4) * (160 - w));
 	be->incInternal(29);
 
@@ -716,7 +717,7 @@ void boss2_cb(BossEnemy *be)
 
 	// The weak points are protected by the shields when they are being covered by them
 	Enemy *s = attached(boss2_ghost_leftShield), *w_enn = attached(boss2_ghost_leftWeakPoint);
-	SDL_QueryTexture(s->img, NULL, NULL, &w, &h);
+	Get_Size_Image(s->img, NULL, NULL, &w, &h);
 	w_enn->damageable = !collidePointRect(w_enn->getx(), w_enn->gety(), s->getx(), s->gety(), w, h);
 	s = attached(boss2_ghost_rightShield); 
 	w_enn = attached(boss2_ghost_rightWeakPoint);
@@ -726,7 +727,7 @@ void boss2_cb(BossEnemy *be)
 		be->incInternal(30);
 
 	// Continuously fire bullets from the two top points (21, 54) and (118, 55)
-	SDL_QueryTexture(bossImage_entries[be->body], NULL, NULL, &w, &h);
+	Get_Size_Image(bossImage_entries[be->body], NULL, NULL, &w, &h);
 	Fixed ox = itofix(w / 2 - 21), oy = itofix(-h / 2 + 54);
 	if (!(G_gpTimer % 20))
 		Level::bArray->add(be->getx() - ox, be->gety() + oy, 128 + Level::p->angleToXY(be->getx() - ox, be->gety() + oy) + ((rand() % 32) - 16), 192, image_LUT_enemy_bullet_0_light, LIGHT, true, be->getCamRel());
@@ -779,7 +780,7 @@ void boss2_cb(BossEnemy *be)
 			{
 				if (be->waitFrames(2))
 				{
-					SDL_QueryTexture(bossImage_entries[bossImage_LUT_2_leftArm], NULL, NULL, &w, &h);
+					Get_Size_Image(bossImage_entries[bossImage_LUT_2_leftArm], NULL, NULL, &w, &h);
 					Fixed centerX = be->getx();
 					Fixed offset = abs(attached(boss2_ghost_leftArm)->getx() - itofix(w / 2) + itofix(30) - centerX);
 					Fixed centerY = attached(boss2_ghost_leftArm)->gety() - itofix(h / 2) + itofix(50);
@@ -826,7 +827,7 @@ void boss2_cb(BossEnemy *be)
 					// Hardcoded values for the positions from where to shoot the bullets
 					int positions[] = { 45, 37, 48, 31, 52, 26, 55, 19, 56, 12, 54, 7 };
 					Rect dir;
-					SDL_QueryTexture(bossImage_entries[bossImage_LUT_2_leftArm], NULL, NULL, &w, &h);
+					Get_Size_Image(bossImage_entries[bossImage_LUT_2_leftArm], NULL, NULL, &w, &h);
 					dir.x = itofix(w - w / 2);
 					dir.y = itofix(h - h / 2);
 					Fixed a;
@@ -844,12 +845,12 @@ void boss2_cb(BossEnemy *be)
 						dir.h = attached(boss2_ghost_leftArm)->gety();
 						a = attached(boss2_ghost_leftArm)->angleToXY(-dir.y + dir.w, dir.x + dir.h) + 16;
 					}
-					SDL_QueryTexture(bossImage_entries[bossImage_LUT_2_leftArm], NULL, NULL, &w, &h);
+					Get_Size_Image(bossImage_entries[bossImage_LUT_2_leftArm], NULL, NULL, &w, &h);
 					dir.w -= itofix(w) / 2;
 					dir.h -= itofix(h) / 2;
 					for (int k = 0; k < 6; k++)
 					{
-						SDL_QueryTexture(bossImage_entries[bossImage_LUT_2_rightWing], NULL, NULL, &w, &h);
+						Get_Size_Image(bossImage_entries[bossImage_LUT_2_rightWing], NULL, NULL, &w, &h);
 						Level::bArray->add(dir.w + itofix(odd ? w - positions[k*2] : positions[k*2]),
 								dir.h + itofix(positions[k*2+1]), a + (rand() % 32) - 16,
 								192 + (rand() % 192), image_LUT_enemy_bullet_0_light, be->getInternal(4) & 1, true, CAMREL_NONE);
@@ -918,7 +919,7 @@ void boss2_cb(BossEnemy *be)
 						if (oddWave)
 						{
 							pos = getJointPoint(be, boss2_jointData, boss2_joint_rightWing);
-							SDL_QueryTexture(bossImage_entries[bossImage_LUT_2_rightWing], NULL, NULL, &w, &h);
+							Get_Size_Image(bossImage_entries[bossImage_LUT_2_rightWing], NULL, NULL, &w, &h);
 							offsetX = w - positions[i * 2] - pos.w;
 							offsetY = positions[i * 2 + 1] - pos.h;
 							rotate(pos.x + offsetX, pos.y + offsetY, pos.x, pos.y, be->getInternal(1), &pos);
@@ -966,7 +967,7 @@ void boss2_cb(BossEnemy *be)
 				for (int i = 0; i < 6; i++)
 				{
 					Rect pos = getJointPoint(be, boss2_jointData, boss2_joint_rightWing);
-					SDL_QueryTexture(bossImage_entries[bossImage_LUT_2_rightWing], NULL, NULL, &w, &h);
+					Get_Size_Image(bossImage_entries[bossImage_LUT_2_rightWing], NULL, NULL, &w, &h);
 					int offsetX = w - positions[i * 2] - pos.w;
 					int offsetY = positions[i * 2 + 1] - pos.h;
 					rotate(pos.x + offsetX, pos.y + offsetY, pos.x, pos.y, be->getInternal(1), &pos);
@@ -1024,10 +1025,10 @@ void boss2_cb(BossEnemy *be)
 int boss1_ccb1(BossEnemy *be, Bullet *b, int amount)
 {
 	Rect jointPos = getJointPoint(be, boss1_jointData, boss1_joint_leftarm_armed);
-	SDL_Texture *img = bossImage_entries[bossImage_LUT_1_leftarm_armed];
+	Texture_nKaruga *img = bossImage_entries[bossImage_LUT_1_leftarm_armed];
 	Rect box;
 	int w, h;
-	SDL_QueryTexture(img, NULL, NULL, &w, &h);
+	Get_Size_Image(img, NULL, NULL, &w, &h);
 	
 	getBoundingBox(jointPos.x - jointPos.w, jointPos.y - jointPos.h, w, h, jointPos.x, jointPos.y, be->angle, &box);
 	
@@ -1044,9 +1045,9 @@ int boss1_ccb1(BossEnemy *be, Bullet *b, int amount)
 int boss1_ccb2(BossEnemy *be, Bullet *b, int amount)
 {
 	Rect jointPos = getJointPoint(be, boss1_jointData, boss1_joint_rightarm_armed2);
-	SDL_Texture *img = bossImage_entries[bossImage_LUT_1_rightarm_armed2];
+	Texture_nKaruga *img = bossImage_entries[bossImage_LUT_1_rightarm_armed2];
 	int w, h;
-	SDL_QueryTexture(img, NULL, NULL, &w, &h);
+	Get_Size_Image(img, NULL, NULL, &w, &h);
 	Rect box;
 	
 	getBoundingBox(jointPos.x - jointPos.w, jointPos.y - jointPos.h, w, h, jointPos.x, jointPos.y, be->angle, &box);
@@ -1063,9 +1064,9 @@ int boss1_ccb2(BossEnemy *be, Bullet *b, int amount)
 // Hitbox : body
 int boss1_ccb3(BossEnemy *be, Bullet *b, int amount)
 {
-	SDL_Texture *img = bossImage_entries[bossImage_LUT_1_body];
+	Texture_nKaruga *img = bossImage_entries[bossImage_LUT_1_body];
 	int w, h;
-	SDL_QueryTexture(img, NULL, NULL, &w, &h);
+	Get_Size_Image(img, NULL, NULL, &w, &h);
 	
 	if(be->getx() - itofix(w) / 2 <= b->getx() && be->getx() + itofix(w) / 2 >= b->getx() &&
 		be->gety() - itofix(h) / 2 <= b->gety() && be->gety() + itofix(h) / 2 >= b->gety())
@@ -1153,7 +1154,7 @@ bool boss2_pccb(BossEnemy *be)
 Fixed boss1_dcb1(BossEnemy *be, PowerFragment *pf)
 {
 	int w, h;
-	SDL_QueryTexture(bossImage_entries[bossImage_LUT_1_leftarm_armed], NULL, NULL, &w, &h);
+	Get_Size_Image(bossImage_entries[bossImage_LUT_1_leftarm_armed], NULL, NULL, &w, &h);
 	Rect pos = getJointPoint(be, boss1_jointData, boss1_joint_leftarm_armed);
 	rotate(pos.x, pos.y, fixtoi(be->getx()), fixtoi(be->gety()), be->angle, &pos);
 	rotate(pos.x, pos.y + h / 2, pos.x, pos.y, be->angle, &pos);
@@ -1199,9 +1200,9 @@ Fixed boss2_dcb(BossEnemy *be, PowerFragment *pf)
 Fixed boss1_acb1(BossEnemy *be, PowerFragment *pf)
 {
 	int w, h;
-	SDL_QueryTexture(bossImage_entries[bossImage_LUT_1_leftarm_armed], NULL, NULL, &w, &h);
 	Entity temp;
 	Rect pos = getJointPoint(be, boss1_jointData, boss1_joint_leftarm_armed);
+	Get_Size_Image(bossImage_entries[bossImage_LUT_1_leftarm_armed], NULL, NULL, &w, &h);
 	rotate(pos.x, pos.y, fixtoi(be->getx()), fixtoi(be->gety()), be->angle, &pos);
 	rotate(pos.x, pos.y + h / 2, pos.x, pos.y, be->angle, &pos);
 	temp.activate();

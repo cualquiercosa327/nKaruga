@@ -1,7 +1,7 @@
 #include "n2DLib.h"
 #include "n2DLib_font.h"
-#include <SDL_ttf.h>
-
+#include <SDL.h>
+#include <SDL_render.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -20,24 +20,19 @@ int record;
 #define RGBA8_GET_B(c)   (((c)) & 0xFF)*8
 #define RGBA8_GET_A(c)   255
 
-
-struct str_struct
-{
-	int x;
-	int y;
-};
-
 unsigned short BUFF_BASE_ADDRESS[76800];
+static char texture_magic;
 SDL_Window *sdlWindow;
 SDL_Renderer *sdlRenderer;
 SDL_Texture* font_texture;
 
 Uint32 baseFPS;
 void Load_Font();
+extern void load_all_images();
 
 void initBuffering()
 {
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 	sdlWindow = SDL_CreateWindow("nKaruga", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 320, 240, SDL_WINDOW_FULLSCREEN_DESKTOP);  
 	sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_ACCELERATED);
 	SDL_RenderSetLogicalSize(sdlRenderer, 320, 240);
@@ -60,6 +55,8 @@ void initBuffering()
 	G_keys = SDL_GetKeyboardState(NULL);
 	
 	Load_Font();
+	load_all_images();
+
 }
 
 void constrainFrameRate(int fps)
@@ -303,16 +300,11 @@ void drawSprite(SDL_Texture *src, int _x, int _y, int flash, unsigned short flas
 
 	if (flash) 
 	{
-		/*SDL_SetRenderDrawBlendMode(sdlRenderer, SDL_BLENDMODE_ADD);
-		SDL_SetTextureBlendMode(src, SDL_BLENDMODE_ADD);
-		SDL_SetTextureColorMod(src, RGBA8_GET_R(flashColor), RGBA8_GET_G(flashColor), RGBA8_GET_B(flashColor));*/
 		SDL_SetTextureColorMod(src, RGBA8_GET_R(flashColor)-128, RGBA8_GET_G(flashColor)-128, RGBA8_GET_B(flashColor)-128);
 	}
 	SDL_RenderCopy(sdlRenderer, src, NULL, &position);
 	if (flash) 
 	{
-		/*SDL_SetRenderDrawBlendMode(sdlRenderer, SDL_BLENDMODE_NONE);
-		SDL_SetTextureBlendMode(src, SDL_BLENDMODE_NONE);*/
 		SDL_SetTextureColorMod(src, 255, 255, 255);
 	}
 }
@@ -334,16 +326,11 @@ void drawSpritePart(SDL_Texture* src, int _x, int _y, const Rect* part, int flas
 	position.h = part->h;
 	if (flash) 
 	{
-		/*SDL_SetRenderDrawBlendMode(sdlRenderer, SDL_BLENDMODE_ADD);
-		SDL_SetTextureBlendMode(src, SDL_BLENDMODE_ADD);
-		SDL_SetTextureColorMod(src, RGBA8_GET_R(flashColor), RGBA8_GET_G(flashColor), RGBA8_GET_B(flashColor));*/
 		SDL_SetTextureColorMod(src, RGBA8_GET_R(flashColor)-128, RGBA8_GET_G(flashColor)-128, RGBA8_GET_B(flashColor)-128);
 	}
 	SDL_RenderCopy(sdlRenderer, src, &frame, &position);
 	if (flash) 
 	{
-		/*SDL_SetRenderDrawBlendMode(sdlRenderer, SDL_BLENDMODE_NONE);
-		SDL_SetTextureBlendMode(src, SDL_BLENDMODE_NONE);*/
 		SDL_SetTextureColorMod(src, 255, 255, 255);
 	}
 }
@@ -356,21 +343,47 @@ void drawSpriteRotated(SDL_Texture* source, const Rect* sr, const Rect* rc, Fixe
 {
 	unsigned int w, h;
 	SDL_QueryTexture(source, NULL, NULL, &w, &h);
-
+	Rect defaultRect = { w / 2,h / 2, 0, 0 };
+	Rect fr;
+	unsigned short currentPixel;
+	Fixed dX = fixcos(angle), dY = fixsin(angle);
+	
+	if(rc == NULL)
+		rc = &defaultRect;
+	
+	getBoundingBox(-rc->x, -rc->y, w, h, 0, 0, angle, &fr);
+	fr.x += sr->x;
+	fr.y += sr->y;
+	fr.w += fr.x;
+	fr.h += fr.y;
+	
+	Rect cp, lsp, cdrp;
+	
+	// Feed fixed-point to get fixed-point
+	rotate(itofix(fr.x - sr->x), itofix(fr.y - sr->y), 0, 0, -angle, &lsp);
+	
 	SDL_Rect position;
-	position.x = sr->x-(w/2);
-	position.y = sr->y-(h/2);
+	position.x = sr->x-(rc->x);
+	position.y = sr->y-(rc->y);
 	position.w = w;
 	position.h = h;
 	
 	float result_angle;
-	result_angle = -angle;
+	result_angle = -angle*1.1f;
 	
 	SDL_Point center;
 	center.x = (w/2);
 	center.y = (h/2);
 
+	if (flash) 
+	{
+		SDL_SetTextureColorMod(source, RGBA8_GET_R(flashColor)-128, RGBA8_GET_G(flashColor)-128, RGBA8_GET_B(flashColor)-128);
+	}
 	SDL_RenderCopyEx(sdlRenderer, source, NULL, &position, result_angle, &center, SDL_FLIP_NONE);
+	if (flash) 
+	{
+		SDL_SetTextureColorMod(source, 255, 255, 255);
+	}
 }
 
 /*            *
@@ -403,45 +416,49 @@ void drawPolygon(unsigned short c, int pointsNb, ...)
 		*(pointsList + i) = cur_arg;
 	}
 	
+	SDL_SetRenderDrawColor(sdlRenderer, RGBA8_GET_R(c), RGBA8_GET_G(c), RGBA8_GET_B(c), RGBA8_GET_A(c));
+	
 	for (i = 0; i < pointsNb * 2 - 2; i += 2)
 	{
-		drawLine(*(pointsList + i), *(pointsList + i + 1), *(pointsList + i + 2), *(pointsList + i + 3), c);
+		//drawLine(*(pointsList + i), *(pointsList + i + 1), *(pointsList + i + 2), *(pointsList + i + 3), c);
+		SDL_RenderDrawLine(sdlRenderer, *(pointsList + i), *(pointsList + i + 1), *(pointsList + i + 2), *(pointsList + i + 3));
 	}
-	drawLine(*(pointsList + pointsNb*2 - 2), *(pointsList + pointsNb*2 - 1), *(pointsList), *(pointsList + 1), c);
+	SDL_RenderDrawLine(sdlRenderer, *(pointsList + pointsNb*2 - 2), *(pointsList + pointsNb*2 - 1), *(pointsList), *(pointsList + 1));
+	//drawLine(*(pointsList + pointsNb*2 - 2), *(pointsList + pointsNb*2 - 1), *(pointsList), *(pointsList + 1), c);
 	va_end(ap);
 	free(pointsList);
 }
 
 void fillCircle(int x, int y, int radius, unsigned short c)
 {
+	SDL_SetRenderDrawColor(sdlRenderer, RGBA8_GET_R(c), RGBA8_GET_G(c), RGBA8_GET_B(c), RGBA8_GET_A(c));
 	int i,j;
 	for(j=-radius; j<=radius; j++)
 		for(i=-radius; i<=radius; i++)
 			if(i*i+j*j <= radius*radius)
-				setPixel(x + i, y + j, c);               
+				SDL_RenderDrawPoint (sdlRenderer, x + i, y + j);
+				//setPixel(x + i, y + j, c);               
 }
 
 /*  /!\ for circle and ellispe, the x and y must be the center of the shape, not the top-left point   /!\  */
 
 void fillEllipse(int x, int y, int w, int h, unsigned short c)
 {
+	SDL_SetRenderDrawColor(sdlRenderer, RGBA8_GET_R(c), RGBA8_GET_G(c), RGBA8_GET_B(c), RGBA8_GET_A(c));
 	int i,j;
 	for(j=-h; j<=h; j++)
 		for(i=-w; i<=w; i++)
 			if(i*i*h*h+j*j*w*w <= h*h*w*w)
-				setPixel(x + i, y + j, c);
+				SDL_RenderDrawPoint (sdlRenderer, x + i, y + j);
+				//setPixel(x + i, y + j, c);
 }
 
 /*        *
  *  Text  *
  *        */
 
-struct str_struct drawChar(int x, int y, int margin, char ch, unsigned short fc, unsigned short olc)
+void drawChar(int* x, int* y, int margin, char ch, unsigned short fc, unsigned short olc)
 {
-	struct str_struct true_str;
-	true_str.x = x;
-	true_str.y = y;
-	
 	char str[1];
 	if (ch > 96 && ch < 122)
 	{
@@ -454,16 +471,16 @@ struct str_struct drawChar(int x, int y, int margin, char ch, unsigned short fc,
 		
 	if(ch == '\n')
 	{
-		true_str.x = margin;
-		true_str.y += 8;
+		*x = margin;
+		*y += 8;
 	}
-	else if (y < 239)
+	else if (*y < 239)
 	{
 		int w, h;
 		SDL_QueryTexture(font_texture, NULL, NULL, &w, &h);
 		SDL_Rect position;
-		position.x = true_str.x;
-		position.y = true_str.y;
+		position.x = *x;
+		position.y = *y;
 		position.w = 8;
 		position.h = 8;
 		SDL_Rect frame;
@@ -472,27 +489,17 @@ struct str_struct drawChar(int x, int y, int margin, char ch, unsigned short fc,
 		frame.w = 8;
 		frame.h = 8;
 		SDL_RenderCopy(sdlRenderer, font_texture, &frame, &position);
-		true_str.x += 8;
+		*x += 8;
 	}
-	
-	return true_str;
 }
 
 void drawString(int* x, int* y, int _x, const char *str, unsigned short fc, unsigned short olc)
 {
-	struct str_struct true_str;
-	
-	true_str.x = *x;
-	true_str.y = *y;
-	
 	int i, max = strlen(str);
 	for(i = 0; i < max; i++)
 	{
-		true_str = drawChar(true_str.x, true_str.y, _x, str[i], fc, olc);
+		drawChar(x, y, _x, str[i], fc, olc);
 	}
-	
-	*x = true_str.x;
-	*y = true_str.y;
 }
 
 void drawDecimal(int* x, int* y, int n, unsigned short fc, unsigned short olc)
@@ -577,6 +584,19 @@ int get_key_pressed(t_key* report)
 int isKey(t_key k1, t_key k2)
 {
 	return k1 == k2;
+}
+
+void Get_Size_Image(Texture_nKaruga * texture, char* stub, char* stub2, int *w, int *h)
+{
+	if (texture != NULL)
+	{
+		SDL_QueryTexture(texture, NULL, NULL, w, h);
+	}
+	else
+	{
+		*w = 0;
+		*h = 0;
+	}
 }
 
 SDL_Texture* Load_Image(const char* directory)

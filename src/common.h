@@ -10,6 +10,17 @@
 #include <stack>
 #include <SDL_mixer.h>
 
+#ifdef HOMEDIR
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#ifdef GCW0
+#define get_home_path getenv("HOME")
+#else
+#define get_home_path getenv("XDG_CONFIG_HOME")
+#endif
+#endif
+
 #include "n2DLib.h"
 
 #define UNUSED(var) (void)var
@@ -91,13 +102,13 @@ class Joint
 public:
 	Joint();
 	~Joint();
-	void activate(Entity *target, int targetX, int targetY, int jointX, int jointY, int jointCX, int jointCY, SDL_Texture *timg, SDL_Texture *jimg);
-	void activate(Entity *target, int targetX, int targetY, int targetCX, int targetCY, int jointX, int jointY, int jointCX, int jointCY, SDL_Texture *timg, SDL_Texture *jimg);
+	void activate(Entity *target, int targetX, int targetY, int jointX, int jointY, int jointCX, int jointCY, Texture_nKaruga *timg, Texture_nKaruga *jimg);
+	void activate(Entity *target, int targetX, int targetY, int targetCX, int targetCY, int jointX, int jointY, int jointCX, int jointCY, Texture_nKaruga *timg, Texture_nKaruga *jimg);
 	Fixed getx();
 	Fixed gety();
 	Entity *target;
-	SDL_Texture *timg; // the target's image
-	SDL_Texture *jimg; // the jointed image
+	Texture_nKaruga *timg; // the target's image
+	Texture_nKaruga *jimg; // the jointed image
 	int targetX, targetY; // the connection point on the target
 	int targetCX, targetCY; // the target's rotation center if relevant
 	int jointX, jointY; // the connection point on the jointed image
@@ -117,8 +128,8 @@ class DrawingCandidate
 public:
 	DrawingCandidate();
 	~DrawingCandidate();
-	void activate(SDL_Texture *img, Rect *pos, bool flash, int camRelation);
-	void activate(SDL_Texture *img, Rect *pos, Rect *center, Fixed angle, bool flash, int camRelation);
+	void activate(Texture_nKaruga *img, Rect *pos, bool flash, int camRelation);
+	void activate(Texture_nKaruga *img, Rect *pos, Rect *center, Fixed angle, bool flash, int camRelation);
 	void deactivate();
 	void draw();
 private:
@@ -128,7 +139,7 @@ private:
 	// See the enum lower in the file
 	int camRel;
 	Fixed angle;
-	SDL_Texture *img;
+	Texture_nKaruga *img;
 };
 
 class DrawingCandidates
@@ -136,8 +147,8 @@ class DrawingCandidates
 public:
 	DrawingCandidates();
 	~DrawingCandidates();
-	void add(SDL_Texture *img, Rect *pos, bool flash, int camRelation);
-	void add(SDL_Texture *img, Rect *pos, Rect *center, Fixed angle, bool flash, int camRelation);
+	void add(Texture_nKaruga *img, Rect *pos, bool flash, int camRelation);
+	void add(Texture_nKaruga *img, Rect *pos, Rect *center, Fixed angle, bool flash, int camRelation);
 	void flush();
 	void loadCameraPath(int id);
 	Camera cam;
@@ -163,7 +174,7 @@ public:
 	Fixed gety();
 	// speed
 	Fixed dx, dy;
-	SDL_Texture *img;
+	Texture_nKaruga *img;
 protected:
 	bool polarity;
 	bool hurtPlayer;
@@ -289,7 +300,7 @@ public:
 	// First two are "normal" ship
 	// Other four are polarity transition animation frames (frame 0 light/shadow, frame 1 light/shadow)
 	// images have same dimensions
-	SDL_Texture *img[6];
+	Texture_nKaruga *img[6];
 	int deathCounter;
 private:
 	int isSwitchingPolarity;
@@ -317,8 +328,8 @@ public:
 	void handle();
 	void activate(int x, int y, int HP, int shipImgID, int callbackID, int waveIndex, bool polarity, bool hasRotation, int firebackAmount, bool ghost, int type);
 	bool damage(bool polarity, int amount);
-	void joint(Entity *target, int targetX, int targetY, int jointX, int jointY, int jointCX, int jointCY, SDL_Texture *timg, SDL_Texture *jimg, bool diesWithJoint);
-	void joint(Entity *target, int targetX, int targetY, int targetCX, int targetCY, int jointX, int jointY, int jointCX, int jointCY, SDL_Texture *timg, SDL_Texture *jimg, bool diesWithJoint);
+	void joint(Entity *target, int targetX, int targetY, int jointX, int jointY, int jointCX, int jointCY, Texture_nKaruga *timg, Texture_nKaruga *jimg, bool diesWithJoint);
+	void joint(Entity *target, int targetX, int targetY, int targetCX, int targetCY, int jointX, int jointY, int jointCX, int jointCY, Texture_nKaruga *timg, Texture_nKaruga *jimg, bool diesWithJoint);
 	bool collide(Fixed x, Fixed y, Fixed cx = 0, Fixed cy = 0);
 	Fixed getRotation();
 	void setRotation(Fixed angle);
@@ -334,7 +345,7 @@ public:
 	// x, y on-screen
 	// Enemy image
 	bool visible;
-	SDL_Texture *img;
+	Texture_nKaruga *img;
 	bool diedThisFrame;
 	//
 	// Used by patterns
@@ -578,7 +589,7 @@ typedef void (*backgroundHandle)(BackgroundScroller*);
 class BackgroundScroller
 {
 public:
-	BackgroundScroller(SDL_Texture *bg, Fixed _x, Fixed _y, Fixed sscale, Fixed dscale, int bgHandleID);
+	BackgroundScroller(Texture_nKaruga *bg, Fixed _x, Fixed _y, Fixed sscale, Fixed dscale, int bgHandleID);
 	~BackgroundScroller();
 	void draw();
 	void update();
@@ -586,7 +597,7 @@ public:
 	Fixed y;
 	Fixed dx;
 	Fixed dy;
-	SDL_Texture *img;
+	Texture_nKaruga *img;
 	Fixed w;
 	Fixed h;
 	unsigned short colorKey;
@@ -1107,9 +1118,9 @@ enum
 	bgHandle_2_2
 };
 
-extern SDL_Texture *image_entries[NB_IMAGES];
-extern SDL_Texture *bossImage_entries[NB_BOSS_IMAGES];
-extern SDL_Texture *bgImage_entries[NB_BACKGROUND_IMAGES];
+extern Texture_nKaruga *image_entries[NB_IMAGES];
+extern Texture_nKaruga *bossImage_entries[NB_BOSS_IMAGES];
+extern Texture_nKaruga *bgImage_entries[NB_BACKGROUND_IMAGES];
 extern Mix_Chunk *sound_entries[NB_SOUNDS];
 extern Mix_Music *music_entries[NB_MUSICS];
 

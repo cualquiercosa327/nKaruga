@@ -3,9 +3,9 @@
 #include "graphics.h"
 #include "sfx/list.h"
 
-SDL_Texture *image_entries[NB_IMAGES];
-SDL_Texture *bossImage_entries[NB_BOSS_IMAGES];
-SDL_Texture *bgImage_entries[NB_BACKGROUND_IMAGES];
+Texture_nKaruga *image_entries[NB_IMAGES];
+Texture_nKaruga *bossImage_entries[NB_BOSS_IMAGES];
+Texture_nKaruga *bgImage_entries[NB_BACKGROUND_IMAGES];
 Mix_Chunk *sound_entries[NB_SOUNDS];
 Mix_Music *music_entries[NB_MUSICS];
 
@@ -174,6 +174,30 @@ void buildGameLUTs()
 	
 	/* SFX */
 	// Sounds
+	#ifdef HOMEDIR
+	char path_custom_tracks[128], topath[128], temp[128];
+	snprintf(path_custom_tracks, sizeof(path_custom_tracks), "%s/.nkaruga/sfx", get_home_path);
+	if(access( path_custom_tracks, F_OK ) != -1) 
+	{
+		snprintf(topath, sizeof(topath), "%s/.nkaruga/", get_home_path);
+	}
+
+	for (int i = 0; i < NB_SOUNDS; i++)
+	{
+		snprintf(temp, sizeof(temp), "%s%s", topath, sfxList[i]);
+		printf("Loading sound '%s' ... ", temp);
+		sound_entries[i] = Mix_LoadWAV(temp);
+		printf("done\n");
+	}
+	// Background musics
+	for (int i = 0; i < NB_MUSICS; i++)
+	{
+		snprintf(temp, sizeof(temp), "%s%s", topath ,musicList[i]);
+		printf("Loading music '%s' ... ", temp);
+		music_entries[i] = Mix_LoadMUS(temp);
+		printf("done\n");
+	}
+	#else
 	for (int i = 0; i < NB_SOUNDS; i++)
 	{
 		printf("Loading sound '%s' ... ", sfxList[i]);
@@ -187,6 +211,7 @@ void buildGameLUTs()
 		music_entries[i] = Mix_LoadMUS(musicList[i]);
 		printf("done\n");
 	}
+	#endif
 }
 
 void freeGameLUTs()

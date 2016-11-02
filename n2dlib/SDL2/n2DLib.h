@@ -7,6 +7,8 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
+#define Texture_nKaruga SDL_Texture
+
 #if defined(__cplusplus) && !defined(min) && !defined(max)
 inline int min(int a, int b)
 {
@@ -70,17 +72,17 @@ extern void setPixelRGB(unsigned int, unsigned int, unsigned char, unsigned char
 extern void drawHLine(int, int, int, unsigned short);
 extern void drawVLine(int, int, int, unsigned short);
 extern void fillRect(int, int, int, int, unsigned short);
-extern void drawSprite(SDL_Texture*, int, int, int, unsigned short);
-extern void drawSpritePart(SDL_Texture*, int, int, const Rect*, int, unsigned short);
-extern void drawSpriteScaled(SDL_Texture*, const Rect*, int, unsigned short);
-extern void drawSpriteRotated(SDL_Texture*, const Rect*, const Rect*, Fixed, int, unsigned short);
+extern void drawSprite(Texture_nKaruga*, int, int, int, unsigned short);
+extern void drawSpritePart(Texture_nKaruga*, int, int, const Rect*, int, unsigned short);
+extern void drawSpriteScaled(Texture_nKaruga*, const Rect*, int, unsigned short);
+extern void drawSpriteRotated(Texture_nKaruga*, const Rect*, const Rect*, Fixed, int, unsigned short);
 extern void drawLine(int, int, int, int, unsigned short);
 extern void drawPolygon(unsigned short, int, ...);
 extern void fillCircle(int, int, int, unsigned short);
 extern void fillEllipse(int, int, int, int, unsigned short);
 extern void drawString(int*, int*, int, const char*, unsigned short, unsigned short);
 extern void drawDecimal(int*, int*, int, unsigned short, unsigned short);
-//extern void drawChar(int, int, int, char, unsigned short, unsigned short);
+extern void drawChar(int*, int*, int, char, unsigned short, unsigned short);
 extern void drawStringF(int*, int*, int, unsigned short, unsigned short, const char*, ...);
 extern int numberWidth(int);
 extern int stringWidth(const char*);
@@ -88,11 +90,11 @@ extern void wait_no_key_pressed(t_key);
 extern int get_key_pressed(t_key*);
 extern int isKey(t_key, t_key);
 
-extern unsigned short * loadBMP(const char*, unsigned short);
+extern void Get_Size_Image(Texture_nKaruga * texture, char* stub, char* stub2, int *w, int *h);
 
 #define BUFF_BYTES_SIZE (320*240*2)
 extern unsigned short BUFF_BASE_ADDRESS[320 * 240];
-extern SDL_Texture* Load_Image(const char* directory);
+extern Texture_nKaruga* Load_Image(const char* directory);
 
 // Global key state
 extern const t_key *G_keys;

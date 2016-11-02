@@ -10,10 +10,10 @@ DrawingCandidate::~DrawingCandidate()
 	
 }
 
-void DrawingCandidate::activate(SDL_Texture *_img, Rect *_pos, bool _flash, int _camRel)
+void DrawingCandidate::activate(Texture_nKaruga *_img, Rect *_pos, bool _flash, int _camRel)
 {
 	int w, h;
-	SDL_QueryTexture(_img, NULL, NULL, &w, &h);
+	Get_Size_Image(_img, NULL, NULL, &w, &h);
 	img = _img;
 	pos.x = _pos->x - w / 2;
 	pos.y = _pos->y - h / 2;
@@ -23,7 +23,7 @@ void DrawingCandidate::activate(SDL_Texture *_img, Rect *_pos, bool _flash, int 
 	flash = _flash;
 }
 
-void DrawingCandidate::activate(SDL_Texture *_img, Rect *_pos, Rect *_center, Fixed _angle, bool _flash, int _camRel)
+void DrawingCandidate::activate(Texture_nKaruga *_img, Rect *_pos, Rect *_center, Fixed _angle, bool _flash, int _camRel)
 {
 	img = _img;
 	angle = _angle;

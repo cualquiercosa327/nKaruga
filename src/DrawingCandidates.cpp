@@ -68,13 +68,13 @@ DrawingCandidates::~DrawingCandidates()
 	
 }
 
-void DrawingCandidates::add(SDL_Texture *img, Rect *pos, bool flash, int camRel)
+void DrawingCandidates::add(Texture_nKaruga *img, Rect *pos, bool flash, int camRel)
 {
 	data[candidatesCount].activate(img, pos, flash, camRel);
 	candidatesCount++;
 }
 
-void DrawingCandidates::add(SDL_Texture *img, Rect *pos, Rect *center, Fixed angle, bool flash, int camRel)
+void DrawingCandidates::add(Texture_nKaruga *img, Rect *pos, Rect *center, Fixed angle, bool flash, int camRel)
 {
 	data[candidatesCount].activate(img, pos, center, angle, flash, camRel);
 	candidatesCount++;

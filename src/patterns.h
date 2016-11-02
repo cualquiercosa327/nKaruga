@@ -40,8 +40,8 @@ void cb_Pattern_1_2(cb_args)
 void cb_Pattern_1_3(cb_args)
 {
 	int w, h;
-	SDL_QueryTexture(e->img, NULL, NULL, &w, &h);
 	Rect screenRect;
+	Get_Size_Image(e->img, NULL, NULL, &w, &h);
 	e->setAX(3, 320.0, 160.0 + e->waveIndex * w / 2.0, 320.0);
 	e->setAY(3, 0.0, 120.0, 240.0);
 	e->internal[1] = (5 - e->waveIndex) * 16 * 2 + 120;
@@ -56,8 +56,8 @@ void cb_Pattern_1_3(cb_args)
 void cb_Pattern_1_4(cb_args)
 {
 	int w, h;
-	SDL_QueryTexture(e->img, NULL, NULL, &w, &h);
 	Rect screenRect;
+	Get_Size_Image(e->img, NULL, NULL, &w, &h);
 	e->setAX(3, 0.0, 160.0 - (e->waveIndex - 6) * w / 2.0, 0.0);
 	e->setAY(3, 0.0, 120.0, 240.0);
 	e->internal[1] = (5 - (e->waveIndex - 6)) * 16 * 2 + 120;
@@ -222,7 +222,7 @@ void cb_Pattern_1_13(cb_args)
 				for (int i = 0; i < 4; i++)
 				{
 					int k = i * 8 - 20 + 48;
-					SDL_QueryTexture(e->img, NULL, NULL, &w, &h);
+					Get_Size_Image(e->img, NULL, NULL, &w, &h);
 					Level::bArray->add(fixcos(k + (e->internal[0] - 3) * 8) * w / 2 + e->getx(), fixsin(k + (e->internal[0] - 3) * 8) * h / 2 + e->gety(),
 						k, (e->internal[0] - 2) * 64 + itofix(1), image_LUT_enemy_bullet_0_light, e->polarity, true, e->getCamRel());
 				}
@@ -245,7 +245,7 @@ void cb_Pattern_1_13(cb_args)
 						int k = (i - 2) * 16 + 48;
 						for (int j = 0; j < 3; j++)
 						{
-							SDL_QueryTexture(e->img, NULL, NULL, &w, &h);
+							Get_Size_Image(e->img, NULL, NULL, &w, &h);
 							Level::bArray->add(fixcos(k) * w / 2 + e->getx() - fixsin(k) * (j - 1) * 6, fixsin(k) * h / 2 + e->gety() + fixcos(k) * (j - 1) * 6,
 								k, itofix(2), image_LUT_enemy_bullet_2_light, e->polarity, true, e->getCamRel());
 						}
@@ -276,7 +276,7 @@ void cb_Pattern_1_14(cb_args)
 				for (int i = 0; i < 4; i++)
 				{
 					int k = i * 8 - 20 + 80;
-					SDL_QueryTexture(e->img, NULL, NULL, &w, &h);
+					Get_Size_Image(e->img, NULL, NULL, &w, &h);
 					Level::bArray->add(fixcos(k - (e->internal[0] - 3) * 8) * w / 2 + e->getx(), fixsin(k - (e->internal[0] - 3) * 8) * h / 2 + e->gety(),
 						k, (e->internal[0] - 2) * 64 + itofix(1), image_LUT_enemy_bullet_0_light, e->polarity, true, e->getCamRel());
 				}
@@ -300,7 +300,7 @@ void cb_Pattern_1_14(cb_args)
 						for (int j = 0; j < 3; j++)
 						{
 
-							SDL_QueryTexture(e->img, NULL, NULL, &w, &h);
+							Get_Size_Image(e->img, NULL, NULL, &w, &h);
 							Level::bArray->add(fixcos(k) * w / 2 + e->getx() - fixsin(k) * (j - 1) * 6, fixsin(k) * h / 2 + e->gety() + fixcos(k) * (j - 1) * 6,
 								k, itofix(2), image_LUT_enemy_bullet_2_light, e->polarity, true, e->getCamRel());
 						}
@@ -403,7 +403,7 @@ void cb_Pattern_1_18(cb_args)
 void cb_Pattern_1_19(cb_args)
 {
 	int w, h;
-	SDL_QueryTexture(e->img, NULL, NULL, &w, &h);
+	Get_Size_Image(e->img, NULL, NULL, &w, &h);
 	if (!e->internal[3])
 	{
 		e->internal[3] = 1;

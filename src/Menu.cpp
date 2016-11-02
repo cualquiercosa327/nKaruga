@@ -96,7 +96,6 @@ int Menu::run()
 		
 		drawString(&x_spr, &y_spr, 0, ">", 0, 0);
 		updateScreen();
-		updateKeys();
 
 		// Let the user pick an option or fiddle with the values
 		if (isKeyPressed(G_downKey))
@@ -123,7 +122,7 @@ int Menu::run()
 		else
 			pressed[1] = false;
 
-		if (isKeyPressed(SDL_SCANCODE_RETURN))
+		if (isKeyPressed(SDL_SCANCODE_RETURN) || isKeyPressed(G_fireKey))
 		{
 			if (!pressed[2])
 			{

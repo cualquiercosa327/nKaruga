@@ -32,7 +32,6 @@ Enemy::~Enemy()
 void Enemy::handle()
 {
 	int w, h;
-	SDL_QueryTexture(img, NULL, NULL, &w, &h);
 	Rect er;
 	Rect screenRect;
 	
@@ -57,6 +56,7 @@ void Enemy::handle()
 			spawned -= !!spawned;
 			// Have a relatively big threshold for off-screen movement
 			// Props and ghosts are not deleted if they are outside the screen ; they are supposed to delete themselves when needed
+			Get_Size_Image(img, NULL, NULL, &w, &h);
 			if (!prop && !ghost && (fixtoi(screenRect.x) < -w * 2 || fixtoi(screenRect.x) > 319 + w ||
 				fixtoi(screenRect.y) < -h * 2 || fixtoi(screenRect.y) > 239 + h))
 			{
@@ -151,14 +151,14 @@ bool Enemy::damage(bool _pol, int amount)
 	return damageable;
 }
 
-void Enemy::joint(Entity *target, int targetX, int targetY, int jointX, int jointY, int jointCX, int jointCY, SDL_Texture *timg, SDL_Texture *jimg, bool _d)
+void Enemy::joint(Entity *target, int targetX, int targetY, int jointX, int jointY, int jointCX, int jointCY, Texture_nKaruga *timg, Texture_nKaruga *jimg, bool _d)
 {
 	isJointed = true;
 	jointObj->activate(target, targetX, targetY, jointX, jointY, jointCX, jointCY, timg, jimg);
 	diesWithJoint = _d;
 }
 
-void Enemy::joint(Entity *target, int targetX, int targetY, int targetCX, int targetCY, int jointX, int jointY, int jointCX, int jointCY, SDL_Texture *timg, SDL_Texture *jimg, bool _d)
+void Enemy::joint(Entity *target, int targetX, int targetY, int targetCX, int targetCY, int jointX, int jointY, int jointCX, int jointCY, Texture_nKaruga *timg, Texture_nKaruga *jimg, bool _d)
 {
 	isJointed = true;
 	jointObj->activate(target, targetX, targetY, targetCX, targetCY, jointX, jointY, jointCX, jointCY, timg, jimg);
@@ -168,7 +168,7 @@ void Enemy::joint(Entity *target, int targetX, int targetY, int targetCX, int ta
 bool Enemy::collide(Fixed _x, Fixed _y, Fixed _cx, Fixed _cy)
 {
 	int w_, h_;
-	SDL_QueryTexture(img, NULL, NULL, &w_, &h_);
+	Get_Size_Image(img, NULL, NULL, &w_, &h_);
 	Fixed x = fToScreenX(getx(), getCamRel()), y = fToScreenY(gety(), getCamRel());
 	Fixed w = itofix(w_), h = itofix(h_);
 	Rect temp;

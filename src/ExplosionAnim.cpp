@@ -18,7 +18,7 @@ ExplosionAnim::~ExplosionAnim()
 void ExplosionAnim::activate(int _x, int _y, bool _p)
 {
 	int w, h;
-	SDL_QueryTexture(image_explosion_light_0, NULL, NULL, &w, &h);
+	Get_Size_Image(image_explosion_light_0, NULL, NULL, &w, &h);
 	
 	x = _x - w / 2;
 	y = _y - h / 2;

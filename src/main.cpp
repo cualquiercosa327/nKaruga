@@ -3,16 +3,8 @@
 #include "levels.h" 
 #include "graphics.h"
 #include "misc_data.h"
-
-#ifdef HOMEDIR
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#endif
+#include "writefile.h"
 #include <stack>
-
-extern void load_all_images();
 
 #define ENEMY_W(i) Level::enemiesArray->data[i].img[0]
 #define ENEMY_H(i) Level::enemiesArray->data[i].img[1]
@@ -36,25 +28,14 @@ Particles *G_particles;
 
 void playGame();
 
-static unsigned short image_cursor[] = { 5, 8, 1,
-0, 0, 1, 1, 1,
-1, 0, 0, 1, 1,
-1, 1, 0, 0, 1,
-1, 1, 1, 0, 0,
-1, 1, 1, 0, 0,
-1, 1, 0, 0, 1,
-1, 0, 0, 1, 1,
-0, 0, 1, 1, 1
-};
-
 inline void writeKeyToConfig(FILE* out, t_key* key)
 {
-	fputc(*key, out);
+	WriteInt(*key, out);
 }
 
 inline void readKeyFromConfig(FILE* in, t_key* key)
 {
-	*key = fgetc(in);
+	*key = ReadInt(in);
 }
 
 inline void writeToConfig(FILE* out)
@@ -98,7 +79,7 @@ static FILE* open_configfile(const char* mode)
 	#ifdef HOMEDIR
 	char finalpath[128], finalpath2[128];
 	
-	snprintf(finalpath, sizeof(finalpath), "%s/.nkaruga", getenv("XDG_CONFIG_HOME"));
+	snprintf(finalpath, sizeof(finalpath), "%s/.nkaruga", get_home_path);
 	/* Check if home folder exists */
 	if(access( finalpath, F_OK ) == -1) 
 	{
@@ -168,7 +149,6 @@ int main(int argc, char **argv)
 	
 	printf("Building game LUTs ...\n");
 	initBuffering();
-	load_all_images();
 	buildGameLUTs();
 	printf("Done\n");
 	
@@ -480,12 +460,11 @@ void playGame()
 
 		// Draw remaining lives
 		drawSprite(image_entries[image_LUT_lives], 0, 224, 0, 0);
-		SDL_QueryTexture(image_lives, NULL, NULL, &w, &h);
+		Get_Size_Image(image_lives, NULL, NULL, &w, &h);
 		
 		statsRect.x = w + 2;
 		statsRect.y = 226;
-		drawString(&statsRect.x, &statsRect.y, 0, "x", 0xffff, 0);
-		//drawChar(statsRect.x, statsRect.y, 0, 'x', 0xffff, 0);
+		drawChar(&statsRect.x, &statsRect.y, 0, 'x', 0xffff, 0);
 		drawDecimal(&statsRect.x, &statsRect.y, max(0, Level::p->getLives() - 1), 0xffff, 0);
 
 		// Overwrite all of that

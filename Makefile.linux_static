@@ -1,17 +1,18 @@
 CC = gcc
 CXX = g++
 LD = g++
-SDL_CONFIG = ./buildscript/final/bin/sdl2-config
-CFLAGS = -Ofast -fdata-sections -ffunction-sections `$(SDL_CONFIG) --cflags` -DHOMEDIR
+SDL_CONFIG = ./buildscript/libs/bin/sdl2-config
+CFLAGS = -O0 -g `$(SDL_CONFIG) --cflags` -DHOMEDIR -I./n2dlib/SDL2
 CXXFLAGS = $(CFLAGS) -std=c++11 -fno-exceptions -fno-rtti 
-LDFLAGS =-static-libgcc -static-libstdc++ 
-LDFLAGS += -L./buildscript/final/lib -lSDL2 -lSDL2_mixer
+LDFLAGS = -static-libgcc -static-libstdc++ 
+LDFLAGS += -Lbuildscript/libs/lib -lSDL2 -lSDL2_mixer -lvorbisfile -lvorbis -logg
 LDFLAGS += -lX11 -lXext -lXcursor -lXinerama -lXi -lXrandr -lXss -lXxf86vm
-LDFLAGS += -lxcb -lXau -lXrender -lXcursor -lXdmcp -lpthread -lrt -ldl
-LDFLAGS += -lm -Wl,--as-needed,--gc-sections -flto -s
+LDFLAGS += -lxcb -lXau -lXrender -lXcursor -lXdmcp -lpthread -lrt -ldl 
+LDFLAGS += -Wl,-Bstatic -lSDL2_image -lpng -lz 
+LDFLAGS += -lm -Wl,--as-needed,--gc-sections -flto
 LDFLAGS += -pthread -ldl
 EXE = nKaruga
-DIRECTORIES = ./src
+DIRECTORIES = ./src ./n2dlib/SDL2
 OBJS = $(patsubst %.c, %.o, $(shell find $(DIRECTORIES) -name \*.c))
 OBJS += $(patsubst %.cpp, %.o, $(shell find $(DIRECTORIES) -name \*.cpp))
 

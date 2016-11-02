@@ -318,7 +318,7 @@ void Level::updateBg()
 
 // Introductions
 static const char *levelStrs[5] = { "Chapter 1\nIdeal", "Chapter 2\nTrial", "Chapter 3\nFaith", "Chapter 4\nReality", "Chapter 5\nMetempsychosis" };
-static SDL_Texture *levelKanjis[2] = { image_kanji_1, image_kanji_2 };
+static Texture_nKaruga *levelKanjis[2] = { image_kanji_1, image_kanji_2 };
 
 void Level::intro1()
 {
@@ -341,7 +341,16 @@ void Level::intro1()
 		int x = 30;
 		int y = 60;
 		drawString(&x, &y, x, levelStrs[chapterNum], 0xffff, 0);
-		drawSprite(levelKanjis[chapterNum], 30, 80, 0, 0);
+		switch(chapterNum)
+		{
+			case 0:
+				drawSprite(image_kanji_1, 30, 80, 0, 0);
+			break;
+			case 1:
+				drawSprite(image_kanji_2, 30, 80, 0, 0);
+			break;
+		}
+		//drawSprite(levelKanjis[chapterNum], 30, 80, 0, 0);
 	}
 	if(G_gpTimer > 384)
 	{
