@@ -143,6 +143,8 @@ int main(int argc, char **argv)
 	G_particles = new Particles;
 	DC = new DrawingCandidates;
 
+	Level::init(1);
+
 	printf("Bleh 5");
 	// Mix_Volume(-1, 0);
 	// Mix_VolumeMusic(0);
@@ -156,11 +158,6 @@ int main(int argc, char **argv)
 	clearBufferW();
 	initExplosionEngine();
 	timer_load(1, 0);
-	
-	Level::init(1);
-	
-	
-	
 
 	while(!donePlaying)
 	{
