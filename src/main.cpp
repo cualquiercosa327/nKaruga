@@ -161,6 +161,7 @@ int main(int argc, char **argv)
 	printf("Building game LUTs ...\n");
 	buildGameLUTs();
 	printf("Done\n");
+	Level::init(1);
 	
 	// Init things
 	initBuffering();
@@ -168,7 +169,6 @@ int main(int argc, char **argv)
 	initExplosionEngine();
 	timer_load(1, 0);
 	
-	Level::init(1);
 
 	while(!donePlaying)
 	{
