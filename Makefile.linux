@@ -1,12 +1,23 @@
 CC = gcc
 CXX = g++
 LD = g++
-CFLAGS = -Ofast -fdata-sections -ffunction-sections `sdl2-config --cflags` -DHOMEDIR
+SDL = 1
+
+ifeq ($(SDL),1)
+CFLAGS = -I./n2dlib/SDL12 `sdl-config --cflags` -I./n2dlib/SDL12
+LDFLAGS = -lSDL -lSDL_mixer
+DIRECTORIES = ./n2dlib/SDL12
+else ifeq ($(SDL),2)
+CFLAGS = -I./n2dlib/SDL12 `sdl2-config --cflags` -I./n2dlib/SDL2
+LDFLAGS = -lSDL2 -lSDL2_mixer
+DIRECTORIES = ./n2dlib/SDL12
+endif
+
+CFLAGS += -Ofast -pg -fdata-sections -ffunction-sections `sdl2-config --cflags` -DHOMEDIR
 CXXFLAGS = $(CFLAGS) -std=c++11 -fno-exceptions -fno-rtti 
-LDFLAGS = -lSDL2 -lSDL2_mixer -lstdc++
-LDFLAGS += -lm -Wl,--as-needed,--gc-sections -flto -s
+LDFLAGS += -lm -Wl,--as-needed,--gc-sections -flto
 EXE = nKaruga
-DIRECTORIES = ./src
+DIRECTORIES += ./src
 OBJS = $(patsubst %.c, %.o, $(shell find $(DIRECTORIES) -name \*.c))
 OBJS += $(patsubst %.cpp, %.o, $(shell find $(DIRECTORIES) -name \*.cpp))
 

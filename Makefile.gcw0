@@ -1,12 +1,27 @@
-CC = mipsel-linux-gcc
-CXX = mipsel-linux-g++
-LD = mipsel-linux-g++
-CFLAGS = -Ofast -fdata-sections -ffunction-sections `sdl2-config --cflags` -DHOMEDIR
+TOOLCHAIN = /opt/gcw0-toolchain/usr/bin/
+CC = $(TOOLCHAIN)mipsel-linux-gcc
+CXX = $(TOOLCHAIN)mipsel-linux-g++
+LD = $(TOOLCHAIN)mipsel-linux-g++
+SDL = 1
+
+ifeq ($(SDL),1)
+SDL-CONFIG = /opt/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/bin/sdl-config
+CFLAGS = -I./n2dlib/SDL12 -I./n2dlib/SDL12
+LDFLAGS = -lSDL -lSDL_mixer
+DIRECTORIES = ./n2dlib/SDL12
+else ifeq ($(SDL),2)
+SDL-CONFIG = /opt/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/bin/sdl2-config
+CFLAGS = -I./n2dlib/SDL12 -I./n2dlib/SDL2
+LDFLAGS = -lSDL2 -lSDL2_mixer
+DIRECTORIES = ./n2dlib/SDL2
+endif
+
+CFLAGS += -Ofast -mips32r2 `$(SDL-CONFIG) --cflags` -fdata-sections -DHOMEDIR -DGCW0
+CFLAGS += -falign-functions=1 -falign-jumps=1 -falign-loops=1 -falign-labels=1
 CXXFLAGS = $(CFLAGS) -std=c++11 -fno-exceptions -fno-rtti 
-LDFLAGS = -lSDL2 -lSDL2_mixer -lstdc++
-LDFLAGS += -lm -Wl,--as-needed,--gc-sections -flto -s
+LDFLAGS += -Wl,--as-needed,--gc-sections -flto -lm -s
 EXE = nKaruga
-DIRECTORIES = ./src
+DIRECTORIES += ./src
 OBJS = $(patsubst %.c, %.o, $(shell find $(DIRECTORIES) -name \*.c))
 OBJS += $(patsubst %.cpp, %.o, $(shell find $(DIRECTORIES) -name \*.cpp))
 

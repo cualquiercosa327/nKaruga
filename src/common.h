@@ -9,6 +9,16 @@
 #include <vector>
 #include <stack>
 #include <SDL_mixer.h>
+#ifdef HOMEDIR
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#ifdef GCW0
+#define get_home_path getenv("HOME")
+#else
+#define get_home_path getenv("XDG_CONFIG_HOME")
+#endif
+#endif
 
 #include "n2DLib.h"
 

@@ -3,13 +3,7 @@
 #include "levels.h" 
 #include "gfx/kanji.h"
 #include "misc_data.h"
-
-#ifdef HOMEDIR
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#endif
+#include "writefile.h"
 #include <stack>
 
 #define ENEMY_W(i) Level::enemiesArray->data[i].img[0]
@@ -47,12 +41,12 @@ static unsigned short image_cursor[] = { 5, 8, 1,
 
 inline void writeKeyToConfig(FILE* out, t_key* key)
 {
-	fputc(*key, out);
+	WriteInt(*key, out);
 }
 
 inline void readKeyFromConfig(FILE* in, t_key* key)
 {
-	*key = fgetc(in);
+	*key = ReadInt(in);
 }
 
 inline void writeToConfig(FILE* out)
@@ -96,7 +90,7 @@ static FILE* open_configfile(const char* mode)
 	#ifdef HOMEDIR
 	char finalpath[128], finalpath2[128];
 	
-	snprintf(finalpath, sizeof(finalpath), "%s/.nkaruga", getenv("XDG_CONFIG_HOME"));
+	snprintf(finalpath, sizeof(finalpath), "%s/.nkaruga", get_home_path);
 	/* Check if home folder exists */
 	if(access( finalpath, F_OK ) == -1) 
 	{

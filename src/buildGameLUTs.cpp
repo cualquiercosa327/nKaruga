@@ -178,6 +178,34 @@ void buildGameLUTs()
 	
 	/* SFX */
 	// Sounds
+	#ifdef HOMEDIR
+	char path_custom_tracks[128], topath[128], temp[128];
+	snprintf(path_custom_tracks, sizeof(path_custom_tracks), "%s/.nkaruga/sfx", get_home_path);
+	if(access( path_custom_tracks, F_OK ) != -1) 
+	{
+		snprintf(topath, sizeof(topath), "%s/.nkaruga/", get_home_path);
+	}
+	else
+	{
+		snprintf(topath, sizeof(topath), "./");
+	}
+
+	for (int i = 0; i < NB_SOUNDS; i++)
+	{
+		snprintf(temp, sizeof(temp), "%s%s", topath, sfxList[i]);
+		printf("Loading sound '%s' ... ", temp);
+		sound_entries[i] = Mix_LoadWAV(temp);
+		printf("done\n");
+	}
+	// Background musics
+	for (int i = 0; i < NB_MUSICS; i++)
+	{
+		snprintf(temp, sizeof(temp), "%s%s", topath ,musicList[i]);
+		printf("Loading music '%s' ... ", temp);
+		music_entries[i] = Mix_LoadMUS(temp);
+		printf("done\n");
+	}
+	#else
 	for (int i = 0; i < NB_SOUNDS; i++)
 	{
 		printf("Loading sound '%s' ... ", sfxList[i]);
@@ -191,6 +219,7 @@ void buildGameLUTs()
 		music_entries[i] = Mix_LoadMUS(musicList[i]);
 		printf("done\n");
 	}
+	#endif
 }
 
 void freeGameLUTs()
