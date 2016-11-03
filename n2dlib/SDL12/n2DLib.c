@@ -36,7 +36,12 @@ extern void load_all_images();
 void initBuffering()
 {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-	screen = SDL_SetVideoMode(320, 240, 16, SDL_SWSURFACE);
+	SDL_ShowCursor(0);
+	screen = SDL_SetVideoMode(320, 240, 16, SDL_HWSURFACE
+	#ifdef SDL_TRIPLEBUF
+	| SDL_TRIPLEBUF
+	#endif
+	);
 
 	baseFPS = SDL_GetTicks();
 	SDL_PumpEvents();

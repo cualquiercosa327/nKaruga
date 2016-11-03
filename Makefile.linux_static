@@ -2,7 +2,7 @@ CC = gcc
 CXX = g++
 LD = g++
 SDL_CONFIG = ./buildscript/libs/bin/sdl2-config
-CFLAGS = -O0 -g `$(SDL_CONFIG) --cflags` -DHOMEDIR -I./n2dlib/SDL2
+CFLAGS = -O0 -pg `$(SDL_CONFIG) --cflags` -DHOMEDIR -I./n2dlib/SDL2 -I./n2dlib/gfx -Isrc
 CXXFLAGS = $(CFLAGS) -std=c++11 -fno-exceptions -fno-rtti 
 LDFLAGS = -static-libgcc -static-libstdc++ 
 LDFLAGS += -Lbuildscript/libs/lib -lSDL2 -lSDL2_mixer -lvorbisfile -lvorbis -logg
@@ -12,7 +12,7 @@ LDFLAGS += -Wl,-Bstatic -lSDL2_image -lpng -lz
 LDFLAGS += -lm -Wl,--as-needed,--gc-sections -flto
 LDFLAGS += -pthread -ldl
 EXE = nKaruga
-DIRECTORIES = ./src ./n2dlib/SDL2
+DIRECTORIES = ./src ./n2dlib/SDL2 ./n2dlib/gfx
 OBJS = $(patsubst %.c, %.o, $(shell find $(DIRECTORIES) -name \*.c))
 OBJS += $(patsubst %.cpp, %.o, $(shell find $(DIRECTORIES) -name \*.cpp))
 

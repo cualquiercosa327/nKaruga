@@ -10,6 +10,17 @@
 #include <stack>
 #include <SDL_mixer.h>
 
+#ifdef COMPILED
+#include "bg.h"
+#include "bossgfx.h"
+#include "bossWarning.h"
+#include "end_of_demo.h"
+#include "gfx.h"
+#include "kanji.h"
+#include "load_all.h"
+#include "titleScreen.h"
+#endif
+
 #ifdef HOMEDIR
 #include <stdlib.h>
 #include <sys/stat.h>

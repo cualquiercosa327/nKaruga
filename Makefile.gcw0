@@ -2,14 +2,31 @@ TOOLCHAIN = /opt/gcw0-toolchain/usr/bin/
 CC = $(TOOLCHAIN)mipsel-linux-gcc
 CXX = $(TOOLCHAIN)mipsel-linux-g++
 LD = $(TOOLCHAIN)mipsel-linux-g++
-SDL-CONFIG = /opt/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/bin/sdl-config
 
-CFLAGS = -Ofast -mips32r2 `$(SDL-CONFIG) --cflags` -I./n2dlib/SDL12 -I./src -DHOMEDIR -DGCW0
+SDL = SOFT
+
+ifeq ($(SDL),1)
+CFLAGS = -I./n2dlib/SDL12
+LDFLAGS += -lSDL -lSDL_mixer -lSDL_image
+SDL-CONFIG = /opt/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/bin/sdl-config
+DIRECTORIES = ./n2dlib/SDL12
+else ifeq ($(SDL),2)
+CFLAGS = -I./n2dlib/SDL2
+SDL-CONFIG = /opt/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/bin/sdl2-config
+LDFLAGS += -lSDL2 -lSDL2_mixer -lSDL2_image
+DIRECTORIES = ./n2dlib/SDL2
+else ifeq ($(SDL),SOFT)
+SDL-CONFIG = /opt/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/bin/sdl-config
+CFLAGS = -I./n2dlib/SD12_soft `sdl-config --cflags` -I./n2dlib/gfx -DCOMPILED
+LDFLAGS += -lSDL -lSDL_mixer
+DIRECTORIES = ./n2dlib/SD12_soft
+endif
+
+CFLAGS += -Ofast -mips32r2 `$(SDL-CONFIG) --cflags` -I./src -DHOMEDIR -DGCW0
 CXXFLAGS = $(CFLAGS) -std=c++11 -fno-exceptions -fno-rtti 
-LDFLAGS = -lSDL -lSDL_mixer -lSDL_image
 LDFLAGS += -lm -Wl,--as-needed -flto
 EXE = nKaruga
-DIRECTORIES = ./src ./n2dlib/SDL12
+DIRECTORIES += ./src
 OBJS = $(patsubst %.c, %.o, $(shell find $(DIRECTORIES) -name \*.c))
 OBJS += $(patsubst %.cpp, %.o, $(shell find $(DIRECTORIES) -name \*.cpp))
 

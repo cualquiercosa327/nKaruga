@@ -301,11 +301,12 @@ void drawSprite(SDL_Texture *src, int _x, int _y, int flash, unsigned short flas
 	if (flash) 
 	{
 		SDL_SetTextureColorMod(src, RGBA8_GET_R(flashColor)-128, RGBA8_GET_G(flashColor)-128, RGBA8_GET_B(flashColor)-128);
-	}
-	SDL_RenderCopy(sdlRenderer, src, NULL, &position);
-	if (flash) 
-	{
+		SDL_RenderCopy(sdlRenderer, src, NULL, &position);
 		SDL_SetTextureColorMod(src, 255, 255, 255);
+	}
+	else
+	{
+		SDL_RenderCopy(sdlRenderer, src, NULL, &position);
 	}
 }
 

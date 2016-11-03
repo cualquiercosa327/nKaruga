@@ -1,19 +1,25 @@
 CC = gcc
 CXX = g++
 LD = g++
-SDL = 1
+SDL = SOFT
 
 ifeq ($(SDL),1)
-CFLAGS += -I./n2dlib/SDL12 `sdl-config --cflags`
+CFLAGS = -I./n2dlib/SDL12 `sdl-config --cflags` -I ./n2dlib/gfx
 LDFLAGS += -lSDL -lSDL_mixer -lSDL_image -lSDL_gfx
-DIRECTORIES = ./n2dlib/SDL12
+DIRECTORIES = ./n2dlib/SDL12 ./n2dlib/gfx
 else ifeq ($(SDL),2)
-CFLAGS += -I./n2dlib/SDL2 `sdl2-config --cflags`
+CFLAGS = -I./n2dlib/SDL2 `sdl2-config --cflags` -I ./n2dlib/gfx
 LDFLAGS += -lSDL2 -lSDL2_mixer -lSDL2_image
-DIRECTORIES = ./n2dlib/SDL2
+DIRECTORIES = ./n2dlib/SDL2 ./n2dlib/gfx
+else ifeq ($(SDL),SOFT)
+CFLAGS = -I./n2dlib/SD12_soft `sdl-config --cflags` -I./n2dlib/gfx -DCOMPILED
+LDFLAGS += -lSDL -lSDL_mixer
+DIRECTORIES = ./n2dlib/SD12_soft
 endif
 
-CFLAGS += -O0 -g -DHOMEDIR -I./src
+
+
+CFLAGS += -O2 -pg -DHOMEDIR -I./src
 CXXFLAGS = $(CFLAGS) -std=c++11 -fno-exceptions -fno-rtti 
 LDFLAGS += -lm -Wl,--as-needed,--gc-sections -flto
 DIRECTORIES += ./src 

@@ -3,6 +3,8 @@
 
 #include <SDL.h>
 #include "n2DLib.h"
+
+#ifndef COMPILED
 extern Texture_nKaruga * image_null;
 extern Texture_nKaruga * image_titleScreen;
 extern Texture_nKaruga * image_kanji_1;
@@ -178,6 +180,6 @@ extern Texture_nKaruga * image_player_ship_shadow;
 extern Texture_nKaruga * image_powerslot;
 extern Texture_nKaruga * image_prop_wall_left;
 extern Texture_nKaruga * image_prop_wall_right;
-
+#endif
 
 #endif

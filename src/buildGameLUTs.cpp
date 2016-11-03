@@ -181,6 +181,10 @@ void buildGameLUTs()
 	{
 		snprintf(topath, sizeof(topath), "%s/.nkaruga/", get_home_path);
 	}
+	else
+	{
+		snprintf(topath, sizeof(topath), "./");
+	}
 
 	for (int i = 0; i < NB_SOUNDS; i++)
 	{

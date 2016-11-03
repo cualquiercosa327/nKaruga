@@ -9,6 +9,9 @@ screenshots
 src/*.o
 *.elf
 *.exe
+*.ot
+./*.opk
+text.txt
 *.zip
 *.deb
 *.res
@@ -29,7 +32,6 @@ buildscript/libogg-1.3.2
 release
 release/*.deb
 release/*.zip
-release/*.opk
 n2dlib/SDL2/*.o
 n2dlib/SDL12/*.o
 opk/sfx

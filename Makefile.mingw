@@ -4,7 +4,7 @@ LD = i686-w64-mingw32-g++
 WINDRES = i686-w64-mingw32-windres
 SDL_CONFIG = /usr/i686-w64-mingw32/bin/sdl2-config
 
-CFLAGS = -Ofast -fdata-sections -ffunction-sections -Isrc -I./n2dlib/SDL2 -Wall $(shell $(SDL_CONFIG) --cflags)
+CFLAGS += -Ofast -fdata-sections -ffunction-sections -Isrc -I./n2dlib/SDL2 -I ./n2dlib/gfx -Wall $(shell $(SDL_CONFIG) --cflags)
 CXXFLAGS = $(CFLAGS) -std=c++11 -fno-exceptions -fno-rtti
 LDFLAGS = -static -lmingw32 
 LDFLAGS += $(shell $(SDL_CONFIG) --static-libs) 
@@ -12,7 +12,7 @@ LDFLAGS += -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 
 LDFLAGS += -lSDL2_mixer -lSDL2_image -lpng16 -lz -lvorbisidec -lm  -static-libgcc -mwindows -s
 LDFLAGS += -Wl,--as-needed,--gc-sections -flto
 EXE = nKaruga
-DIRECTORIES = ./src ./n2dlib/SDL2
+DIRECTORIES = ./src ./n2dlib/SDL2 ./n2dlib/gfx
 OBJS = $(patsubst %.c, %.o, $(shell find $(DIRECTORIES) -name \*.c))
 OBJS += $(patsubst %.cpp, %.o, $(shell find $(DIRECTORIES) -name \*.cpp))
 OBJS += icon.res
